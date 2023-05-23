@@ -9,6 +9,7 @@ public class XprTokenizer
 {
     
     private const char DECIMAL_SEPARATOR = '.';
+    private const char ARG_SEPARATOR = ',';
     private const char UNDERSCORE = '_';
     private const char BRACKET_OPEN = '(';
     private const char BRACKET_CLOSE = ')';
@@ -111,6 +112,10 @@ public class XprTokenizer
         } else if (c == BRACKET_CLOSE)
         {
             tokenType = XprTokenType.BracketClose;
+            cur++;
+        } else if (c == ARG_SEPARATOR)
+        {
+            tokenType = XprTokenType.ArgSeparator;
             cur++;
         }
         else

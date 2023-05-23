@@ -18,4 +18,9 @@ public class Xpr
             Val = XprParser.createVal(src);
         }
     }
+
+    public float eval(XprContext ctx)
+    {
+        return Val.Eval(ctx);
+    }
 }

@@ -11,4 +11,8 @@ public class XprToken
         this.Type = type;
         this.Value = value;
     }
+
+    public float NumberValue => (float)Value;
+    
+    public MathOperator MathOperatorValue => (MathOperator)Value;
 }

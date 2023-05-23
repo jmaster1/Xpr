@@ -39,6 +39,8 @@ public class XprParser
         return parseVal(xt, true);
     }
 
+    private readonly Stack<XprVal> vals = new();
+    
     XprVal parseVal(XprTokenizer xt, bool checkMathOperations)
     {
         if (xt.isEof())
@@ -46,8 +48,35 @@ public class XprParser
             return null;
         }
 
-        xt.nextToken();
-        XprVal f = null;
-        return f;
+        var token = xt.nextToken();
+        XprVal val = null;
+        var prev = vals.Peek();
+        switch (token.Type)
+        {
+            case XprTokenType.Invalid:
+                break;
+            case XprTokenType.Number:
+                val = new XprValNumber(token.NumberValue);
+                break;
+            case XprTokenType.BracketOpen:
+                break;
+            case XprTokenType.BracketClose:
+                break;
+            case XprTokenType.Operator:
+                val = new XprValOperator(token.MathOperatorValue);
+                break;
+            case XprTokenType.Variable:
+                break;
+            case XprTokenType.Function:
+                break;
+            default:
+                throw new ArgumentOutOfRangeException();
+        }
+
+        if (prev != null)
+        {
+            val = val.consume(prev);
+        }
+        return val;
     }
 }

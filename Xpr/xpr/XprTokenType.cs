@@ -8,5 +8,6 @@ public enum XprTokenType
     BracketClose,
     Operator,
     Variable,
-    Function
+    Function,
+    ArgSeparator
 }
