@@ -9,7 +9,7 @@ public class XprParser
         return instance.parse(src);
     }
     
-    public static XprVal createVal(string src)
+    public static XprVal? createVal(string src)
     {
         return instance.parseVal(src);
     }
@@ -23,67 +23,82 @@ public class XprParser
         return xpr;
     }
 
-    private XprVal parseVal(string source)
+    private XprVal? parseVal(string source)
     {
         var xt = new XprTokenizer(source);
         
-        XprVal val = parseVal(xt);
+        XprVal? val = parseVal(xt);
         if(!xt.IsEof) {
             throw new Exception(string.Format("Unexpected remaining text '{}' in source expression '{}'",
-                source.Substring(xt.cur), source));
+                source.Substring(xt.Cur), source));
         }
         return val;
     }
     
-    public XprVal parseVal(XprTokenizer xt) {
-        return parseVal(xt, true);
+    public XprVal? parseVal(XprTokenizer xt) {
+        return ParseVal(xt, true);
     }
 
     private readonly Stack<XprVal> vals = new();
     
-    XprVal parseVal(XprTokenizer xt, bool checkMathOperations)
+    private readonly Stack<XprToken?> tokens = new();
+    
+    XprVal? ParseVal(XprTokenizer xt, bool checkMathOperations)
     {
-        if (xt.IsEof)
+        var token = xt.nextToken();
+        if (token == null)
         {
             return null;
         }
-
-        var token = xt.nextToken();
-        XprVal val = null;
-        var prev = vals.Peek();
+        var prevToken = tokens.Peek();
+        XprVal? val = null;
+        var prevVal = vals.Peek();
         switch (token.Type)
         {
-            case XprTokenType.Invalid:
-                break;
             case XprTokenType.Number:
-                val = new XprValNumber(token.NumberValue);
+                val = new XprValNumber(token);
                 break;
             case XprTokenType.BracketOpen:
                 //
                 // this must be function if variable is prev
+                XprToken? name = null;
+                if (prevToken != null && prevToken.Type == XprTokenType.Variable)
+                {
+                    name = tokens.Pop();
+                }
+                val = new XprValFunc(name, token);
                 break;
             case XprTokenType.BracketClose:
+                if (!prevVal.Is(XprValType.Func))
+                {
+                    BadInput(token, prevVal);
+                }
+                var func = (XprValFunc)prevVal;
+                func.Close(token);
                 break;
             case XprTokenType.Operator:
-                val = new XprValOperator(token.MathOperatorValue);
+                val = new XprValFunc(token);
                 break;
             case XprTokenType.Variable:
-                break;
-            case XprTokenType.Function:
                 break;
             default:
                 throw new ArgumentOutOfRangeException();
         }
-
-        if (prev != null)
+        //
+        // push unconsumed token or created val
+        if (val == null)
         {
-            val = val.consume(prev);
-            if (val != null)
-            {
-                vals.Pop();
-            }
+            tokens.Push(token);
         }
-        vals.Push(val);
+        else
+        {
+            vals.Push(val);
+        }
         return val;
+    }
+
+    private static void BadInput(XprToken token, XprVal prevVal)
+    {
+        throw new ArgumentException(string.Format("Bad input, token={}, prevVal={}", token, prevVal));
     }
 }

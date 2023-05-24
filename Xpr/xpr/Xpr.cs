@@ -4,7 +4,7 @@ public class Xpr
 {
     public string Src;
 
-    public XprVal Val;
+    public XprVal? Val;
 
     public Xpr(string src)
     {

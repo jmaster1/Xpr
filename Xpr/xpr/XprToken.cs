@@ -7,12 +7,15 @@ public class XprToken
 {
     public readonly XprTokenType Type;
 
-    public readonly object Value;
+    public readonly object? Value;
 
-    public XprToken(XprTokenType type, object value)
+    public readonly SrcRange Range;
+
+    public XprToken(XprTokenType type, object? value, SrcRange range)
     {
         Type = type;
         Value = value;
+        Range = range;
     }
 
     public float NumberValue => (float)Value;

@@ -2,11 +2,19 @@ namespace Xpr.xpr;
 
 internal class XprValNumber : XprVal
 {
-    private readonly float Value;
+    public readonly XprToken Token;
     
-    public XprValNumber(float value)
+    public readonly float Value;
+    
+    public XprValNumber(XprToken token)
     {
-        Value = value;
+        Token = token;
+        Value = token.NumberValue;
+    }
+
+    public override XprValType GetValType()
+    {
+        return XprValType.Number;
     }
 
     public override float Eval(XprContext ctx)

@@ -1,4 +1,5 @@
 using System.Text;
+using static Xpr.xpr.XprTokenType;
 
 namespace Xpr.xpr;
 
@@ -7,27 +8,34 @@ namespace Xpr.xpr;
  */
 public class XprTokenizer
 {
-    private const char DECIMAL_SEPARATOR = '.';
+    private const char DecimalSeparator = '.';
     private const char ARG_SEPARATOR = ',';
-    private const char UNDERSCORE = '_';
+    private const char Underscore = '_';
     private const char BRACKET_OPEN = '(';
     private const char BRACKET_CLOSE = ')';
+    private const int Eof = -1;
     
-    public readonly string src;
-
-    public StringReader sr;
-    public int cur;
-    int len;
-    private readonly StringBuilder sb = new();
+    /**
+     * source string
+     */
+    public readonly string Src;
+    public readonly int Len;
     
-    public bool IsEof => cur == len;
+    /**
+     * cursor on the string
+     */
+    public int Cur;
+    
+    private readonly StringBuilder _sb = new();
+    
+    public bool IsEof => Cur == Len;
     
 
     public XprTokenizer(string src)
     {
-        this.src = src;
-        cur = 0;
-        len = src.Length;
+        Src = src;
+        Cur = 0;
+        Len = src.Length;
     }
 
     /**
@@ -36,19 +44,17 @@ public class XprTokenizer
      */
     private bool SkipWhitespaces()
     {
-        for (var c = Peek(); c != EOF && char.IsWhiteSpace((char)c); c = Peek())
+        for (var c = Peek(); c != Eof && char.IsWhiteSpace((char)c); c = Peek())
         {
-            cur++;
+            Cur++;
         }
 
         return IsEof;
     }
 
-    private const int EOF = -1;
-
     private int Peek()
     {
-        return IsEof ? EOF : src[cur];
+        return IsEof ? Eof : Src[Cur];
     }
     
     private int PeekSkipWhitespaces()
@@ -57,98 +63,87 @@ public class XprTokenizer
         return Peek();
     }
     
-    private char NextChar()
-    {
-        return src[cur++];
-    }
-
-    public XprToken nextToken()
+    public XprToken? nextToken()
     {
         if (SkipWhitespaces())
         {
             return null;
         }
         //
-        // try resolve token type from 1st char
+        // resolve token type from 1st char
         var n = Peek();
         var c = (char)n;
-        XprTokenType tokenType = XprTokenType.Invalid;
-        object tokenValue = null;
-        if (isNumeric(c))
+        var tokenType = Invalid;
+        object? tokenValue = null;
+        var range = new SrcRange(Src, Cur);
+        var from = Cur;
+        if (IsNumeric(c))
         {
-            tokenType = XprTokenType.Number;
-            tokenValue = readNumber();
-        } else if (MathOperatorEx.resolve(c, out MathOperator op))
+            tokenType = Number;
+            tokenValue = ReadNumber();
+        } else if (MathOperatorEx.resolve(c, out var op))
         {
-            tokenType = XprTokenType.Operator;
+            tokenType = Operator;
             tokenValue = op;
-            cur++;
-        } else if (isVariable(c))
+            Cur++;
+        } else if (IsVariable(c))
         {
-            tokenType = XprTokenType.Variable;
-            tokenValue = readVariable();
-            //
-            // this should be function if next token is open bracket
-            var next = PeekSkipWhitespaces();
-            if (next == BRACKET_OPEN)
-            {
-                tokenType = XprTokenType.Function;
-            }
-        } else if (c == BRACKET_OPEN)
+            tokenType = Variable;
+            tokenValue = ReadVariable();
+        } else switch (c)
         {
-            tokenType = XprTokenType.BracketOpen;
-            cur++;
-        } else if (c == BRACKET_CLOSE)
-        {
-            tokenType = XprTokenType.BracketClose;
-            cur++;
-        } else if (c == ARG_SEPARATOR)
-        {
-            tokenType = XprTokenType.ArgSeparator;
-            cur++;
+            case BRACKET_OPEN:
+                tokenType = BracketOpen;
+                Cur++;
+                break;
+            case BRACKET_CLOSE:
+                tokenType = BracketClose;
+                Cur++;
+                break;
+            case ARG_SEPARATOR:
+                tokenType = ArgSeparator;
+                Cur++;
+                break;
+            default:
+                throw new Exception("Unexpected char: " + c);
         }
-        else
-        {
-            throw new Exception("Unexpected char: " + c);
-        }
-        
-        return new XprToken(tokenType, tokenValue);
+        return new XprToken(tokenType, tokenValue, range.SetTo(Cur));
     }
 
-    private string readVariable()
+    private string? ReadVariable()
     {
-        return read(isVariable);
+        return Read(IsVariable);
     }
 
-    private bool isVariable(char c)
+    private static bool IsVariable(char c)
     {
-        return char.IsLetter(c) || c == UNDERSCORE;
+        return char.IsLetter(c) || c == Underscore;
     }
 
-    private float readNumber()
+    private float ReadNumber()
     {
-        string str = read(isNumeric);
+        var str = Read(IsNumeric);
         return float.Parse(str);
     }
 
-    private bool isNumeric(char c)
+    private static bool IsNumeric(char c)
     {
-        return char.IsDigit(c) || c == DECIMAL_SEPARATOR;
+        return char.IsDigit(c) || c == DecimalSeparator;
     }
 
-    private string read(Func<char, bool> filter)
+    private string Read(Func<char, bool> filter)
     {
-        sb.Clear();
-        for (var c = Peek(); c != EOF && filter((char)c); c = Peek())
+        _sb.Clear();
+        for (var c = Peek(); c != Eof && filter((char)c); c = Peek())
         {
-            sb.Append((char)c);
-            cur++;
+            _sb.Append((char)c);
+            Cur++;
         }
 
-        return sb.ToString();
+        return _sb.ToString();
     }
 
-    public List<XprToken> parse()
+    public List<XprToken> Parse()
     {
         var list = new List<XprToken>();
         for (var token = nextToken(); token != null; token = nextToken())
