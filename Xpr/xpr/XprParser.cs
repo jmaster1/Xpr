@@ -1,3 +1,5 @@
+using NUnit.Framework;
+
 namespace Xpr.xpr;
 
 public class XprParser : Logger
@@ -13,7 +15,6 @@ public class XprParser : Logger
     {
         return instance.parseVal(src);
     }
-    
     
     private readonly Stack<XprVal> vals = new();
     
@@ -32,20 +33,19 @@ public class XprParser : Logger
     private XprVal? parseVal(string source)
     {
         var xt = new XprTokenizer(source);
-        var val = ParseNext(xt);
-        if(!xt.IsEof) {
-            throw new Exception(string.Format("Unexpected remaining text '{}' in source expression '{}'",
-                source.Substring(xt.Cur), source));
-        }
+        ParseNext(xt);
+        Assert(vals.Count == 1);
+        Assert(tokens.Count == 0);
+        var val = vals.Pop();
         return val;
     }
 
-    XprVal? ParseNext(XprTokenizer xt)
+    void ParseNext(XprTokenizer xt)
     {
         var token = xt.nextToken();
         if (token == null)
         {
-            return null;
+            return;
         }
         XprVal? val = null;
         tokens.TryPeek(out var prevToken);
@@ -56,25 +56,14 @@ public class XprParser : Logger
                 val = new XprValNumber(token);
                 break;
             case XprTokenType.BracketOpen:
-                //
-                // this must be function if variable is prev
-                XprToken? nameToken = null;
-                if (prevVal != null && prevVal.Is(XprValType.Variable))
-                {
-                    nameToken = ((XprValVariable)prevVal).Token;
-                }
-                val = new XprValFunc(nameToken, token);
+                val = new XprValFunc(token);
                 break;
             case XprTokenType.BracketClose:
-                if (!prevVal.Is(XprValType.Func))
-                {
-                    BadInput(token, prevVal);
-                }
-                var func = (XprValFunc)prevVal;
+                var func = (XprValFunc)prevVal!;
                 func.Close(token);
                 break;
             case XprTokenType.Operator:
-                val = new XprValMathOp(token, prevVal);
+                val = new XprValMathOp(token);
                 break;
             case XprTokenType.Variable:
                 val = new XprValVariable(token);
@@ -94,19 +83,35 @@ public class XprParser : Logger
             log("created value {0} for token {1}", val, token);
             if (prevVal != null)
             {
-                prevVal.consumeRight(val);
+                var consumed = prevVal.consumeRight(val);
+                log("{0}.consumeRight({1}) = {2}", prevVal, val, consumed);
+                if (!consumed)
+                {
+                    consumed = val.consumeLeft(prevVal);
+                    log("{0}.consumeLeft({1}) = {2}", val, prevVal, consumed);
+                    if (consumed)
+                    {
+                        vals.Pop();
+                    }
+                }
+                else
+                {
+                    val = null;
+                }
             }
 
-            vals.Push(val);
+            if (val != null)
+            {
+                vals.Push(val);
+            }
         }
 
         if (!xt.IsEof)
         {
             ParseNext(xt);
         }
-        return val;
     }
-
+    
     private static void BadInput(XprToken token, XprVal prevVal)
     {
         throw new ArgumentException(string.Format("Bad input, token={}, prevVal={}", token, prevVal));

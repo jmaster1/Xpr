@@ -13,8 +13,8 @@ public class XprTest
     [Test]
     public void Test()
     {
-        var val = new Xpr("1+1").Eval();
-        
+        Assert.AreEqual(7f, new Xpr("1+2*3").Eval());
+        Assert.AreEqual(2f, new Xpr("1+1").Eval());
     }
 
     private void AssertToken(XprToken token, XprTokenType type, object value)

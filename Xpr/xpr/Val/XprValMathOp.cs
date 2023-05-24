@@ -1,19 +1,16 @@
-using NUnit.Framework;
-
 namespace Xpr.xpr;
 
 internal class XprValMathOp : XprVal
 {
-    private readonly XprVal _left;
-    private XprVal _right;
+    private XprVal? _left, _right;
 
     private readonly MathOperator _mathOperator;
-    private readonly XprToken token;
+    private readonly XprToken _token;
 
-    public XprValMathOp(XprToken operatorToken, XprVal left)
+    public XprValMathOp(XprToken operatorToken)
     {
-        token = Require(operatorToken, XprTokenType.Operator);
-        _left = left;
+        _token = Require(operatorToken, XprTokenType.Operator);
+        _mathOperator = _token.MathOperator;
     }
 
     public override XprValType GetValType()
@@ -25,12 +22,14 @@ internal class XprValMathOp : XprVal
     {
         var l = _left.Eval(ctx);
         var r = _right.Eval(ctx);
-        return token.MathOperator.Apply(l, r);
+        return _token.MathOperator.Apply(l, r);
     }
 
-    public override XprVal consume(XprVal val)
+    public override bool consumeLeft(XprVal val)
     {
-        throw new NotImplementedException();
+        Assert(_left == null);
+        _left = val;
+        return true;
     }
     
     public override bool consumeRight(XprVal val)

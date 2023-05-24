@@ -12,7 +12,7 @@ internal class XprValFunc : XprVal
     private readonly XprToken bracketOpen;
     private XprToken bracketClose;
 
-    public XprValFunc(XprToken? name, XprToken bracketOpen)
+    public XprValFunc(XprToken bracketOpen)
     {
         this.name = name;
         this.bracketOpen = bracketOpen;
@@ -35,23 +35,13 @@ internal class XprValFunc : XprVal
         return result;
     }
 
-    public override XprVal consume(XprVal val)
+    public override bool consumeLeft(XprVal val)
     {
-        /*
-        if (left == null)
+        if (val.Is(XprValType.Variable))
         {
-            left = val;
-        } else if (right == null)
-        {
-            right = val;
+            
         }
-        else
-        {
-            throw new ArgumentOutOfRangeException();
-        }
-        */
-
-        return default;
+        return true;
     }
 
     public override bool consumeRight(XprVal val)

@@ -22,9 +22,9 @@ internal class XprValNumber : XprVal
         return Value;
     }
 
-    public override XprVal consume(XprVal val)
+    public override bool consumeLeft(XprVal val)
     {
-        return null;
+        return false;
     }
     
     public override bool consumeRight(XprVal val)

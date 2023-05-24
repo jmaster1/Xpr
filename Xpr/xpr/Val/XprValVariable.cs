@@ -22,9 +22,9 @@ internal class XprValVariable : XprVal
         return ctx.GetVariableValue(Name);
     }
 
-    public override XprVal consume(XprVal val)
+    public override bool consumeLeft(XprVal val)
     {
-        return null;
+        return false;
     }
 
     public override bool consumeRight(XprVal val)
