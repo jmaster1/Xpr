@@ -8,7 +8,9 @@ public enum MathFunc
     Mul,
     Div,
     Mod,
-    Pow
+    Pow,
+    Sin,
+    Cos
 }
 
 public static class MathFuncEx

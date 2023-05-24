@@ -8,4 +8,14 @@ public class XprContext
     {
         throw new NotImplementedException();
     }
+
+    public Func<ICollection<float>, float> ResolveFunc(string? name)
+    {
+        return x;
+    }
+
+    private float x(ICollection<float> arg)
+    {
+        return -1;
+    }
 }

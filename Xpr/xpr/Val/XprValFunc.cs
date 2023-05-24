@@ -8,13 +8,14 @@ internal class XprValFunc : XprVal
 
     private Func<ICollection<float>, float>? func;
 
-    private readonly XprToken? name;
+    private XprToken? nameToken;
     private readonly XprToken bracketOpen;
     private XprToken bracketClose;
 
+    public string? Name => nameToken?.StringValue; 
+
     public XprValFunc(XprToken bracketOpen)
     {
-        this.name = name;
         this.bracketOpen = bracketOpen;
     }
     
@@ -31,16 +32,18 @@ internal class XprValFunc : XprVal
             _vals.AddLast(val);
         }
 
+        if (func == null)
+        {
+            func = ctx.ResolveFunc(Name);
+        }
         var result = func.Invoke(_vals);
         return result;
     }
 
     public override bool consumeLeft(XprVal val)
     {
-        if (val.Is(XprValType.Variable))
-        {
-            
-        }
+        if (!val.Is(XprValType.Variable)) return false;
+        nameToken = ((XprValVariable)val).Token;
         return true;
     }
 
@@ -57,6 +60,6 @@ internal class XprValFunc : XprVal
     
     public override string ToString()
     {
-        return GetValType() + "=" + name;
+        return GetValType() + "=" + Name;
     }
 }

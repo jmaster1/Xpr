@@ -18,7 +18,7 @@ public class XprParser : Logger
     
     private readonly Stack<XprVal> vals = new();
     
-    private readonly Stack<XprToken?> tokens = new();
+    //private readonly Stack<XprToken?> tokens = new();
 
     private Xpr parse(string source)
     {
@@ -35,7 +35,7 @@ public class XprParser : Logger
         var xt = new XprTokenizer(source);
         ParseNext(xt);
         Assert(vals.Count == 1);
-        Assert(tokens.Count == 0);
+        //Assert(tokens.Count == 0);
         var val = vals.Pop();
         return val;
     }
@@ -48,7 +48,6 @@ public class XprParser : Logger
             return;
         }
         XprVal? val = null;
-        tokens.TryPeek(out var prevToken);
         vals.TryPeek(out var prevVal);
         switch (token.Type)
         {
@@ -76,7 +75,7 @@ public class XprParser : Logger
         if (val == null)
         {
             log("No value created for token: {0}", token);
-            tokens.Push(token);
+            //tokens.Push(token);
         }
         else
         {
