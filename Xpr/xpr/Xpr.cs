@@ -14,13 +14,29 @@ public class Xpr
     public Xpr(string src, bool parse)
     {
         Src = src;
-        if(parse) {
-            Val = XprParser.createVal(src);
+        if(parse)
+        {
+            Parse();
         }
     }
 
-    public float eval(XprContext ctx)
+    private void Parse()
     {
+        Val = XprParser.createVal(Src);
+    }
+
+    public float Eval(XprContext ctx)
+    {
+        if (Val == null)
+        {
+            Parse();
+        }
         return Val.Eval(ctx);
     }
+
+    public float Eval()
+    {
+        return Eval(XprContext.DefaultContext);
+    }
 }
+    

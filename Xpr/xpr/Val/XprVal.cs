@@ -1,9 +1,17 @@
 namespace Xpr.xpr;
 
-public abstract class XprVal
+public abstract class XprVal : Logger
 {
     public abstract XprValType GetValType();
 
+    public static void Assert(bool condition)
+    {
+        if (!condition)
+        {
+            throw new Exception();
+        }
+    }
+    
     public bool Is(XprValType type)
     {
         return type == GetValType();
@@ -22,4 +30,6 @@ public abstract class XprVal
 
         return token;
     }
+
+    public abstract bool consumeRight(XprVal val);
 }

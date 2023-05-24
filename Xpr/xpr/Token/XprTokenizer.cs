@@ -76,7 +76,6 @@ public class XprTokenizer
         var tokenType = Invalid;
         object? tokenValue = null;
         var range = new SrcRange(Src, Cur);
-        var from = Cur;
         if (IsNumeric(c))
         {
             tokenType = Number;
@@ -110,7 +109,7 @@ public class XprTokenizer
         return new XprToken(tokenType, tokenValue, range.SetTo(Cur));
     }
 
-    private string? ReadVariable()
+    private string ReadVariable()
     {
         return Read(IsVariable);
     }

@@ -14,7 +14,7 @@ public struct SrcRange
     
     public override string ToString()
     {
-        return Src.Substring(From, Length);
+        return "" + From + ":" + Length;
     }
 
     public SrcRange SetTo(int cur)

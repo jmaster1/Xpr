@@ -1,7 +1,6 @@
 using NUnit.Framework;
-using Xpr.xpr;
 
-namespace xpr.test;
+namespace Xpr.xpr.test;
 
 public class XprTokenizerTest
 {

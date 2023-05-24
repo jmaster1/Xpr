@@ -54,8 +54,19 @@ internal class XprValFunc : XprVal
         return default;
     }
 
+    public override bool consumeRight(XprVal val)
+    {
+        _args.AddLast(val);
+        return true;
+    }
+
     public void Close(XprToken token)
     {
         bracketClose = token;
+    }
+    
+    public override string ToString()
+    {
+        return GetValType() + "=" + name;
     }
 }

@@ -1,6 +1,6 @@
 namespace Xpr.xpr;
 
-public class XprParser
+public class XprParser : Logger
 {
     public static readonly XprParser instance = new();
     
@@ -14,45 +14,42 @@ public class XprParser
         return instance.parseVal(src);
     }
     
+    
+    private readonly Stack<XprVal> vals = new();
+    
+    private readonly Stack<XprToken?> tokens = new();
 
     private Xpr parse(string source)
     {
-        Xpr xpr = new Xpr(source);
-        xpr.Val = parseVal(source);
-        xpr.Src = source;
-        return xpr;
+        log("Parsing source: " + source);
+        return new Xpr(source)
+        {
+            Val = parseVal(source),
+            Src = source
+        };
     }
 
     private XprVal? parseVal(string source)
     {
         var xt = new XprTokenizer(source);
-        
-        XprVal? val = parseVal(xt);
+        var val = ParseNext(xt);
         if(!xt.IsEof) {
             throw new Exception(string.Format("Unexpected remaining text '{}' in source expression '{}'",
                 source.Substring(xt.Cur), source));
         }
         return val;
     }
-    
-    public XprVal? parseVal(XprTokenizer xt) {
-        return ParseVal(xt, true);
-    }
 
-    private readonly Stack<XprVal> vals = new();
-    
-    private readonly Stack<XprToken?> tokens = new();
-    
-    XprVal? ParseVal(XprTokenizer xt, bool checkMathOperations)
+    XprVal? ParseNext(XprTokenizer xt)
     {
         var token = xt.nextToken();
         if (token == null)
         {
             return null;
         }
-        var prevToken = tokens.Peek();
         XprVal? val = null;
-        var prevVal = vals.Peek();
+        tokens.TryPeek(out var prevToken);
+        vals.TryPeek(out var prevVal);
         switch (token.Type)
         {
             case XprTokenType.Number:
@@ -61,12 +58,12 @@ public class XprParser
             case XprTokenType.BracketOpen:
                 //
                 // this must be function if variable is prev
-                XprToken? name = null;
-                if (prevToken != null && prevToken.Is(XprTokenType.Variable))
+                XprToken? nameToken = null;
+                if (prevVal != null && prevVal.Is(XprValType.Variable))
                 {
-                    name = tokens.Pop();
+                    nameToken = ((XprValVariable)prevVal).Token;
                 }
-                val = new XprValFunc(name, token);
+                val = new XprValFunc(nameToken, token);
                 break;
             case XprTokenType.BracketClose:
                 if (!prevVal.Is(XprValType.Func))
@@ -80,6 +77,7 @@ public class XprParser
                 val = new XprValMathOp(token, prevVal);
                 break;
             case XprTokenType.Variable:
+                val = new XprValVariable(token);
                 break;
             default:
                 throw new ArgumentOutOfRangeException();
@@ -88,11 +86,23 @@ public class XprParser
         // push unconsumed token or created val
         if (val == null)
         {
+            log("No value created for token: {0}", token);
             tokens.Push(token);
         }
         else
         {
+            log("created value {0} for token {1}", val, token);
+            if (prevVal != null)
+            {
+                prevVal.consumeRight(val);
+            }
+
             vals.Push(val);
+        }
+
+        if (!xt.IsEof)
+        {
+            ParseNext(xt);
         }
         return val;
     }
