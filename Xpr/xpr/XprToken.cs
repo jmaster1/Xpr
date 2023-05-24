@@ -1,5 +1,8 @@
 namespace Xpr.xpr;
 
+/**
+ * represents token parsed from character stream
+ */
 public class XprToken
 {
     public readonly XprTokenType Type;
@@ -8,8 +11,8 @@ public class XprToken
 
     public XprToken(XprTokenType type, object value)
     {
-        this.Type = type;
-        this.Value = value;
+        Type = type;
+        Value = value;
     }
 
     public float NumberValue => (float)Value;

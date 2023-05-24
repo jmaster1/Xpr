@@ -14,9 +14,16 @@ public static class MathOperatorEx
 {
     public static readonly char[] Chars = {'+', '-', '*', '/', '^'};
     
-    public static char getChar(this MathOperator val)
+    public static readonly int[] Priorities = {0, 0, 1, 1, 2};
+    
+    public static char GetChar(this MathOperator val)
     {
         return Chars[(int)val];
+    }
+    
+    public static int GetPriority(this MathOperator val)
+    {
+        return Priorities[(int)val];
     }
 
     public static bool resolve(char next, out MathOperator op)

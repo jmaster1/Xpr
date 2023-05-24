@@ -3,11 +3,10 @@ using System.Text;
 namespace Xpr.xpr;
 
 /**
- * converts source string into xpr tokens
+ * converts character stream of expression into xpr tokens
  */
 public class XprTokenizer
 {
-    
     private const char DECIMAL_SEPARATOR = '.';
     private const char ARG_SEPARATOR = ',';
     private const char UNDERSCORE = '_';
@@ -19,7 +18,9 @@ public class XprTokenizer
     public StringReader sr;
     public int cur;
     int len;
-    private readonly StringBuilder sb = new StringBuilder();
+    private readonly StringBuilder sb = new();
+    
+    public bool IsEof => cur == len;
     
 
     public XprTokenizer(string src)
@@ -27,18 +28,6 @@ public class XprTokenizer
         this.src = src;
         cur = 0;
         len = src.Length;
-    }
-
-    public bool isEof()
-    {
-        return cur == len;
-    }
-    
-    public bool isEofSkipWhitespaces()
-    {
-        
-        SkipWhitespaces();
-        return cur == len;
     }
 
     /**
@@ -52,14 +41,14 @@ public class XprTokenizer
             cur++;
         }
 
-        return isEof();
+        return IsEof;
     }
 
     private const int EOF = -1;
 
     private int Peek()
     {
-        return isEof() ? EOF : src[cur];
+        return IsEof ? EOF : src[cur];
     }
     
     private int PeekSkipWhitespaces()

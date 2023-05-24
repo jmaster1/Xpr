@@ -16,6 +16,6 @@ internal class XprValNumber : XprVal
 
     public override XprVal consume(XprVal val)
     {
-        throw new NotImplementedException();
+        return null;
     }
 }

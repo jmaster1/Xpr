@@ -28,7 +28,7 @@ public class XprParser
         var xt = new XprTokenizer(source);
         
         XprVal val = parseVal(xt);
-        if(!xt.isEof()) {
+        if(!xt.IsEof) {
             throw new Exception(string.Format("Unexpected remaining text '{}' in source expression '{}'",
                 source.Substring(xt.cur), source));
         }
@@ -43,7 +43,7 @@ public class XprParser
     
     XprVal parseVal(XprTokenizer xt, bool checkMathOperations)
     {
-        if (xt.isEof())
+        if (xt.IsEof)
         {
             return null;
         }
@@ -59,6 +59,8 @@ public class XprParser
                 val = new XprValNumber(token.NumberValue);
                 break;
             case XprTokenType.BracketOpen:
+                //
+                // this must be function if variable is prev
                 break;
             case XprTokenType.BracketClose:
                 break;
@@ -76,7 +78,12 @@ public class XprParser
         if (prev != null)
         {
             val = val.consume(prev);
+            if (val != null)
+            {
+                vals.Pop();
+            }
         }
+        vals.Push(val);
         return val;
     }
 }
