@@ -4,13 +4,13 @@ internal class XprValMathOp : XprVal
 {
     private XprVal? _left, _right;
 
-    private readonly MathOperator _mathOperator;
+    public MathOperator MathOperator => _token.MathOperator;
+    
     private readonly XprToken _token;
 
     public XprValMathOp(XprToken operatorToken)
     {
         _token = Require(operatorToken, XprTokenType.Operator);
-        _mathOperator = _token.MathOperator;
     }
 
     public override XprValType GetValType()
@@ -27,6 +27,17 @@ internal class XprValMathOp : XprVal
 
     public override bool consumeLeft(XprVal val)
     {
+        //
+        // check if left is lower priority math op
+        if (val.Is(XprValType.MathOp))
+        {
+            var mathOp = (XprValMathOp)val;
+            if (mathOp.MathOperator.GetPriority() < MathOperator.GetPriority())
+            {
+                val = mathOp._right;
+                mathOp._right = this;
+            }
+        }
         Assert(_left == null);
         _left = val;
         return true;
@@ -34,13 +45,13 @@ internal class XprValMathOp : XprVal
     
     public override bool consumeRight(XprVal val)
     {
-        Assert(_right == null);
+        if (_right != null) return false;
         _right = val;
         return true;
     }
     
     public override string ToString()
     {
-        return GetValType() + "=" + _mathOperator;
+        return GetValType() + "=" + MathOperator;
     }
 }

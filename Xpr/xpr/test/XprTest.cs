@@ -17,9 +17,4 @@ public class XprTest
         Assert.AreEqual(2f, new Xpr("1+1").Eval());
     }
 
-    private void AssertToken(XprToken token, XprTokenType type, object value)
-    {
-        Assert.AreEqual(type, token.Type);
-        Assert.AreEqual(value, token.Value);
-    }
 }
