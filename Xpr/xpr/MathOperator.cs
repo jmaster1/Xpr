@@ -42,6 +42,27 @@ public static class MathOperatorEx
     {
         return MathFuncs[(int)val];
     }
+    
+    public static float Apply(this MathOperator val, float l, float r)
+    {
+        switch (val)
+        {
+            case MathOperator.Plus:
+                return l + r;
+            case MathOperator.Minus:
+                return l - r;
+            case MathOperator.Multiply:
+                return l * r;
+            case MathOperator.Divide:
+                return l / r;
+            case MathOperator.Modulus:
+                return l % r;
+            case MathOperator.Power:
+                return (float)Math.Pow(l, r);
+            default:
+                throw new ArgumentOutOfRangeException(nameof(val), val, null);
+        }
+    }
 
     public static bool resolve(char next, out MathOperator op)
     {

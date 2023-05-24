@@ -62,7 +62,7 @@ public class XprParser
                 //
                 // this must be function if variable is prev
                 XprToken? name = null;
-                if (prevToken != null && prevToken.Type == XprTokenType.Variable)
+                if (prevToken != null && prevToken.Is(XprTokenType.Variable))
                 {
                     name = tokens.Pop();
                 }
@@ -77,7 +77,7 @@ public class XprParser
                 func.Close(token);
                 break;
             case XprTokenType.Operator:
-                val = new XprValFunc(token);
+                val = new XprValMathOp(token, prevVal);
                 break;
             case XprTokenType.Variable:
                 break;

@@ -12,14 +12,6 @@ internal class XprValFunc : XprVal
     private readonly XprToken bracketOpen;
     private XprToken bracketClose;
 
-    public XprValFunc(XprToken? operatorToken)
-    {
-        var mathOp = operatorToken.MathOperatorValue;
-        var mathFunc = mathOp.GetMathFunc();
-        func = mathFunc.GetFunc();
-        func = MathFuncEx.add;
-    }
-
     public XprValFunc(XprToken? name, XprToken bracketOpen)
     {
         this.name = name;

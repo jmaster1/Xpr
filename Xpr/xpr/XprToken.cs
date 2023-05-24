@@ -18,7 +18,12 @@ public class XprToken
         Range = range;
     }
 
-    public float NumberValue => (float)Value;
+    public float NumberValue => (float)(Value ?? float.NaN);
     
-    public MathOperator MathOperatorValue => (MathOperator)Value;
+    public MathOperator MathOperator => (MathOperator)(Value ?? MathOperator.Undefined);
+
+    public bool Is(XprTokenType type)
+    {
+        return type == Type;
+    }
 }
