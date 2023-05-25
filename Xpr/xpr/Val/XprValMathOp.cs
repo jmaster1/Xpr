@@ -1,5 +1,4 @@
 using Xpr.xpr.Math;
-using Xpr.xpr.Token;
 
 namespace Xpr.xpr.Val;
 
@@ -7,13 +6,11 @@ internal class XprValMathOp : XprVal
 {
     public XprVal? _left, _right;
 
-    public MathOperator MathOperator => _token.MathOperator;
+    public readonly MathOperator MathOperator;
     
-    private readonly XprToken _token;
-
-    public XprValMathOp(XprToken operatorToken, XprVal left)
+    public XprValMathOp(MathOperator op, XprVal left)
     {
-        _token = RequireToken(operatorToken, XprTokenType.Operator);
+        MathOperator = op;
         _left = left;
     }
 
@@ -26,11 +23,11 @@ internal class XprValMathOp : XprVal
     {
         var l = _left.Eval(ctx);
         var r = _right.Eval(ctx);
-        return _token.MathOperator.Apply(l, r);
+        return MathOperator.Apply(l, r);
     }
     
     public override string ToString()
     {
-        return GetValType() + "=" + MathOperator;
+        return $"{_left} {MathOperator.GetChar()} {_right}";
     }
 }

@@ -18,4 +18,9 @@ internal class XprValVariable : XprVal
     {
         return ctx.GetVariableValue(Name);
     }
+    
+    public override string ToString()
+    {
+        return Name;
+    }
 }

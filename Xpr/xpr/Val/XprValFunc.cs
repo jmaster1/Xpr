@@ -32,9 +32,4 @@ internal abstract class XprValFunc : XprVal
     {
         bracketClose = token;
     }
-    
-    public override string ToString()
-    {
-        return GetValType() + "=" + Name;
-    }
 }

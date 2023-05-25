@@ -46,5 +46,10 @@ public class Xpr
     {
         return XprVal.ToJson(this);
     }
+    
+    public override string ToString()
+    {
+        return Val?.ToString();
+    }
 }
     

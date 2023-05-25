@@ -27,4 +27,9 @@ internal class XprValFunc2 : XprValFunc
         var result = func.Invoke(arg1Val, arg2Val);
         return result;
     }
+    
+    public override string ToString()
+    {
+        return $"{Name}({arg1}, {arg2})";
+    }
 }

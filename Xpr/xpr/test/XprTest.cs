@@ -51,12 +51,17 @@ public class XprTest
     [Test]
     public void TestMath1()
     {
+        CheckEval("1 + sin(0)", 1);
         CheckEval("sin(0)", 0);
+        CheckEval("cos(0)", 1);
     }
 
     private void CheckEval(string src, float expectedResult)
     {
-        var actual = new Xpr(src).Eval();
+        var xpr = new Xpr(src);
+        xpr.Parse();
+        Console.Out.WriteLine($"{src} > {xpr}");
+        var actual = xpr.Eval();
         Assert.AreEqual(expectedResult, actual);
     }
 }

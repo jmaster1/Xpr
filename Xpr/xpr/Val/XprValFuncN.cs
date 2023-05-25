@@ -35,7 +35,7 @@ internal class XprValFuncN : XprValFunc
         _args.AddLast(arg);
     }
 
-    public XprVal? Reduce()
+    public XprVal Reduce()
     {
         if (_args.Count == 1)
         {

@@ -1,10 +1,11 @@
 using Common.Lang;
 using Common.Util;
 using Xpr.xpr.Math;
+using Xpr.xpr.Util;
 
 namespace Xpr.xpr;
 
-public class XprContext
+public class XprContext : GenericEntity
 {
     public static readonly XprContext DefaultContext = new XprContext().ApplyMath();
 
@@ -37,11 +38,13 @@ public class XprContext
 
     public Func<float, float> ResolveFunc1(string name)
     {
+        Assert(name != null);
         return funcs1.Get(name.ToLower());
     }
 
     public Func<float, float, float> ResolveFunc2(string name)
     {
+        Assert(name != null);
         return funcs2.Get(name.ToLower());
     }
 }

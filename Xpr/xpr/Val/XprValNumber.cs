@@ -21,6 +21,6 @@ internal class XprValNumber : XprVal
 
     public override string ToString()
     {
-        return GetValType() + "=" + _value;
+        return _value.ToString();
     }
 }

@@ -7,26 +7,11 @@ namespace Xpr.xpr;
 
 public class XprParser : GenericEntity
 {
-    public static readonly XprParser instance = new();
-    
-    public static Xpr create(string src)
-    {
-        return instance.parse(src);
-    }
+    public static readonly XprParser Instance = new();
     
     public static XprVal? createVal(string src)
     {
-        return instance.parseVal(src);
-    }
-
-    private Xpr parse(string source)
-    {
-        Log("Parsing source: " + source);
-        return new Xpr(source)
-        {
-            Val = parseVal(source),
-            Src = source
-        };
+        return Instance.parseVal(src);
     }
 
     private XprVal? parseVal(string source)
@@ -116,7 +101,7 @@ public class XprParser : GenericEntity
                 }
                 else
                 {
-                    var mathOp = new XprValMathOp(token, prevVal);
+                    var mathOp = new XprValMathOp(token.MathOperator, prevVal);
                     mathOp._right = ParseNext(xt, mathOp, out token);
                     Assert(token == null);
                     val = mathOp;
