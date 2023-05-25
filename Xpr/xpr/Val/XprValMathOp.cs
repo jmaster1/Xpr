@@ -2,7 +2,7 @@ namespace Xpr.xpr;
 
 internal class XprValMathOp : XprVal
 {
-    private XprVal? _left, _right;
+    public XprVal? _left, _right;
 
     public MathOperator MathOperator => _token.MathOperator;
     

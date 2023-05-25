@@ -1,6 +1,6 @@
 namespace Xpr.xpr;
 
-public abstract class XprVal : Logger
+public abstract class XprVal : GenericEntity
 {
     public abstract XprValType GetValType();
 

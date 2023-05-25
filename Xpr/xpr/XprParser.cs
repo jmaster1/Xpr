@@ -1,8 +1,9 @@
+using System.Runtime.InteropServices;
 using NUnit.Framework;
 
 namespace Xpr.xpr;
 
-public class XprParser : Logger
+public class XprParser : GenericEntity
 {
     public static readonly XprParser instance = new();
     
@@ -22,7 +23,7 @@ public class XprParser : Logger
 
     private Xpr parse(string source)
     {
-        log("Parsing source: " + source);
+        Log("Parsing source: " + source);
         return new Xpr(source)
         {
             Val = parseVal(source),
@@ -40,36 +41,54 @@ public class XprParser : Logger
         return val;
     }
 
-    void ParseNext(XprTokenizer xt)
+    XprVal? ParseNext(XprTokenizer xt)
     {
         var token = xt.nextToken();
         if (token == null)
         {
-            return;
+            return null;
         }
-        XprVal? val = null;
+
         vals.TryPeek(out var prevVal);
+        var prevType = prevVal?.GetValType();
+        XprVal? val = null;
         switch (token.Type)
         {
             case XprTokenType.Number:
                 val = new XprValNumber(token);
                 break;
+            case XprTokenType.Variable:
+                val = new XprValVariable(token);
+                break;
             case XprTokenType.BracketOpen:
-                val = new XprValFunc(token);
+                var func = new XprValFunc()
+                {
+                    bracketOpen =  token,
+                    nameVal = prevVal?.Cast<XprValVariable>()
+                };
+                val = func;
                 break;
             case XprTokenType.BracketClose:
-                var func = (XprValFunc)prevVal!;
+                func = (XprValFunc)prevVal!;
                 func.Close(token);
                 break;
             case XprTokenType.Operator:
                 val = new XprValMathOp(token);
                 break;
-            case XprTokenType.Variable:
-                val = new XprValVariable(token);
+            case XprTokenType.ArgSeparator:
                 break;
+            case XprTokenType.Invalid:
             default:
                 throw new ArgumentOutOfRangeException();
         }
+
+        if (prevVal != null)
+        {
+            
+            
+        }
+        return val;
+        /*
         //
         // push unconsumed token or created val
         if (val == null)
@@ -109,6 +128,7 @@ public class XprParser : Logger
         {
             ParseNext(xt);
         }
+        */
     }
     
     private static void BadInput(XprToken token, XprVal prevVal)

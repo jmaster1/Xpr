@@ -3,7 +3,7 @@ namespace Xpr.xpr;
 /**
  * represents token parsed from character stream
  */
-public class XprToken : Logger
+public class XprToken : GenericEntity
 {
     public readonly XprTokenType Type;
 
