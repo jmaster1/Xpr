@@ -1,17 +1,12 @@
-using Xpr.xpr.Token;
-
 namespace Xpr.xpr.Val;
 
 internal class XprValVariable : XprVal
 {
-    public readonly XprToken Token;
-
-    public readonly string? Name;
+    public readonly string Name;
     
-    public XprValVariable(XprToken token)
+    public XprValVariable(string name)
     {
-        Token = RequireToken(token, XprTokenType.Variable);
-        Name = Token.StringValue;
+        Name = name;
     }
 
     public override XprValType GetValType()

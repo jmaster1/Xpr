@@ -1,17 +1,12 @@
-using Xpr.xpr.Token;
-
 namespace Xpr.xpr.Val;
 
 internal class XprValNumber : XprVal
 {
-    public readonly XprToken Token;
+    private readonly float _value;
     
-    public readonly float Value;
-    
-    public XprValNumber(XprToken token)
+    public XprValNumber(float value)
     {
-        Token = RequireToken(token, XprTokenType.Number);
-        Value = token.NumberValue;
+        _value = value;
     }
 
     public override XprValType GetValType()
@@ -21,11 +16,11 @@ internal class XprValNumber : XprVal
 
     public override float Eval(XprContext ctx)
     {
-        return Value;
+        return _value;
     }
 
     public override string ToString()
     {
-        return GetValType() + "=" + Value;
+        return GetValType() + "=" + _value;
     }
 }

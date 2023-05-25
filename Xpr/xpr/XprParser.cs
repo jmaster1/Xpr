@@ -58,15 +58,14 @@ public class XprParser : GenericEntity
         switch (token.Type)
         {
             case XprTokenType.Number:
-                val = new XprValNumber(token);
+                val = new XprValNumber(token.NumberValue);
                 break;
             case XprTokenType.Variable:
-                val = new XprValVariable(token);
+                val = new XprValVariable(token.StringValue);
                 break;
             case XprTokenType.BracketOpen:
                 var name = prevVal?.Cast<XprValVariable>()?.Name;
                 var func = new XprValFuncN(name);
-                val = func;
                 XprVal? arg = null;
                 while (!func.IsClosed && !xt.IsEof)
                 {
@@ -101,6 +100,8 @@ public class XprParser : GenericEntity
                 {
                     throw new XprParseException($"Function {func} left unclosed");
                 }
+
+                val = func.Reduce();
                 break;
             case XprTokenType.Operator:
                 //

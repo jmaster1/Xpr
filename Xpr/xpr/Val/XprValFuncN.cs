@@ -2,14 +2,14 @@ namespace Xpr.xpr.Val;
 
 internal class XprValFuncN : XprValFunc
 {
-    public readonly LinkedList<XprVal?> _args = new();
+    private readonly LinkedList<XprVal?> _args = new();
     
     private readonly LinkedList<float> _vals = new();
 
     /**
      * evaluator (retrieved from context)
      */
-    private Func<ICollection<float>, float>? func;
+    private Func<ICollection<float>, float>? _func;
 
     public XprValFuncN(string name) : base(name)
     {
@@ -24,8 +24,8 @@ internal class XprValFuncN : XprValFunc
             _vals.AddLast(val);
         }
 
-        func ??= ctx.ResolveFunc(Name);
-        var result = func.Invoke(_vals);
+        _func ??= ctx.ResolveFunc(Name);
+        var result = _func.Invoke(_vals);
         return result;
     }
 
@@ -33,5 +33,25 @@ internal class XprValFuncN : XprValFunc
     {
         Assert(arg != null);
         _args.AddLast(arg);
+    }
+
+    public XprVal? Reduce()
+    {
+        if (_args.Count == 1)
+        {
+            return new XprValFunc1(Name)
+            {
+                arg = _args.First.Value
+            };
+        }
+        if (_args.Count == 2)
+        {
+            return new XprValFunc2(Name)
+            {
+                arg1 = _args.First.Value,
+                arg2 = _args.Last.Value
+            };
+        }
+        return this;
     }
 }

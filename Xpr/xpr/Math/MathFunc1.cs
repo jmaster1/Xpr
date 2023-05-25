@@ -5,7 +5,6 @@ namespace Xpr.xpr.Math;
  */
 public enum MathFunc1
 {
-    Undefined,
     Negate,
     Sign,
     Abs,
@@ -17,23 +16,15 @@ public static class MathFunc1Ex
 {
     public static Func<float, float> GetFunc(this MathFunc1 val)
     {
-        switch (val)
+        return val switch
         {
-            case MathFunc1.Negate:
-                return Negate;
-            case MathFunc1.Sign:
-                return Sign;
-            case MathFunc1.Abs:
-                return Abs;
-            case MathFunc1.Sin:
-                return Sin;
-            case MathFunc1.Cos:
-                return Cos;
-            case MathFunc1.Undefined:
-            default:
-                throw new ArgumentOutOfRangeException(nameof(val), val, null);
-        }
-        return Negate;
+            MathFunc1.Negate => Negate,
+            MathFunc1.Sign => Sign,
+            MathFunc1.Abs => Abs,
+            MathFunc1.Sin => Sin,
+            MathFunc1.Cos => Cos,
+            _ => throw new ArgumentOutOfRangeException(nameof(val), val, null)
+        };
     }
 
     private static float Cos(float arg)
