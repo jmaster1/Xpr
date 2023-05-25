@@ -40,12 +40,23 @@ public class XprTest
     }
 
     [Test]
-    public void Test()
+    public void TestSimple()
     {
-        
-        Assert.AreEqual(0f, new Xpr("sin(0)").Eval());
-        Assert.AreEqual(7f, new Xpr("1+2*3").Eval());
-        Assert.AreEqual(2f, new Xpr("1+1").Eval());
+        CheckEval("1", 1);
+        CheckEval("1+2", 3);
+        CheckEval("1 + 2", 3);
+        CheckEval("1+2+3", 6);
+    }
+    
+    [Test]
+    public void TestMath1()
+    {
+        CheckEval("sin(0)", 0);
     }
 
+    private void CheckEval(string src, float expectedResult)
+    {
+        var actual = new Xpr(src).Eval();
+        Assert.AreEqual(expectedResult, actual);
+    }
 }

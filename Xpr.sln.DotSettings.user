@@ -5,6 +5,8 @@
     &lt;TestId&gt;NUnit3x::216A65D4-932B-478F-BB1E-C24DE394B524::net7.0::Xpr.xpr.test.XprTest.Test&lt;/TestId&gt;
     &lt;TestId&gt;NUnit3x::216A65D4-932B-478F-BB1E-C24DE394B524::net7.0::Xpr.xpr.test.XprTest.TestParse&lt;/TestId&gt;
     &lt;TestId&gt;NUnit3x::216A65D4-932B-478F-BB1E-C24DE394B524::net7.0::Xpr.xpr.test.XprTest.TestParseError&lt;/TestId&gt;
+    &lt;TestId&gt;NUnit3x::216A65D4-932B-478F-BB1E-C24DE394B524::net7.0::Xpr.xpr.test.XprTest.TestSimple&lt;/TestId&gt;
+    &lt;TestId&gt;NUnit3x::216A65D4-932B-478F-BB1E-C24DE394B524::net7.0::Xpr.xpr.test.XprTest.TestMath1&lt;/TestId&gt;
   &lt;/TestAncestor&gt;
 &lt;/SessionState&gt;</s:String>
 	</wpf:ResourceDictionary>

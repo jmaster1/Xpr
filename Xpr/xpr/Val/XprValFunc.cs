@@ -7,7 +7,7 @@ internal abstract class XprValFunc : XprVal
     /**
      * bracket tokens
      */
-    public XprToken? bracketClose, bracketOpen;
+    public XprToken? bracketClose;
     
     /**
      * function name retrieval

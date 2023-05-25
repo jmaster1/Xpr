@@ -4,6 +4,7 @@ public class XprContext
 {
     public static readonly XprContext DefaultContext = new ();
     
+    public readonly Map<string, Func<float, float>
     public float GetVariableValue(string? name)
     {
         throw new NotImplementedException();
