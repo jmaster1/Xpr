@@ -1,4 +1,4 @@
-namespace Xpr.xpr;
+namespace Xpr.xpr.Math;
 
 public enum MathOperator
 {
@@ -58,7 +58,7 @@ public static class MathOperatorEx
             case MathOperator.Modulus:
                 return l % r;
             case MathOperator.Power:
-                return (float)Math.Pow(l, r);
+                return (float)System.Math.Pow(l, r);
             default:
                 throw new ArgumentOutOfRangeException(nameof(val), val, null);
         }

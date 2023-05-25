@@ -1,4 +1,6 @@
-namespace Xpr.xpr;
+using Xpr.xpr.Token;
+
+namespace Xpr.xpr.Val;
 
 internal class XprValFunc : XprVal
 {
@@ -47,18 +49,6 @@ internal class XprValFunc : XprVal
         func ??= ctx.ResolveFunc(Name);
         var result = func.Invoke(_vals);
         return result;
-    }
-
-    public override bool consumeLeft(XprVal val)
-    {
-        if (!val.Is(XprValType.Variable)) return false;
-        return true;
-    }
-
-    public override bool consumeRight(XprVal? val)
-    {
-        _args.AddLast(val);
-        return true;
     }
 
     public void Close(XprToken token)

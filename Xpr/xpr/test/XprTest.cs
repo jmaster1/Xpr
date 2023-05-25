@@ -17,6 +17,27 @@ public class XprTest
         var xpr = new Xpr("sin(0+1)").Parse();
         Console.Out.WriteLine(xpr.ToStringDeep());
     }
+    
+    [Test]
+    public void TestParseError()
+    {
+        CheckParseError(")");
+        CheckParseError("sin(");
+    }
+
+    private void CheckParseError(string src)
+    {
+        try
+        {
+            new Xpr(src).Parse();
+        }
+        catch (XprParseException e)
+        {
+            Console.WriteLine(e);
+            return;
+        }
+        Assert.Fail();
+    }
 
     [Test]
     public void Test()

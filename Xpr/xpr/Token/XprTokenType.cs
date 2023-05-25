@@ -1,4 +1,4 @@
-namespace Xpr.xpr;
+namespace Xpr.xpr.Token;
 
 public enum XprTokenType
 {

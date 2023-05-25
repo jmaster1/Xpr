@@ -1,4 +1,6 @@
-namespace Xpr.xpr;
+using Xpr.xpr.Token;
+
+namespace Xpr.xpr.Val;
 
 internal class XprValVariable : XprVal
 {
@@ -20,15 +22,5 @@ internal class XprValVariable : XprVal
     public override float Eval(XprContext ctx)
     {
         return ctx.GetVariableValue(Name);
-    }
-
-    public override bool consumeLeft(XprVal val)
-    {
-        return false;
-    }
-
-    public override bool consumeRight(XprVal? val)
-    {
-        return false;
     }
 }

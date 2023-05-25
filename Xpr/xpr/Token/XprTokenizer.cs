@@ -1,7 +1,8 @@
 using System.Text;
-using static Xpr.xpr.XprTokenType;
+using Xpr.xpr.Math;
+using static Xpr.xpr.Token.XprTokenType;
 
-namespace Xpr.xpr;
+namespace Xpr.xpr.Token;
 
 /**
  * converts character stream of expression into xpr tokens
@@ -9,10 +10,10 @@ namespace Xpr.xpr;
 public class XprTokenizer
 {
     private const char DecimalSeparator = '.';
-    private const char ARG_SEPARATOR = ',';
+    private const char ArgSeparator = ',';
     private const char Underscore = '_';
-    private const char BRACKET_OPEN = '(';
-    private const char BRACKET_CLOSE = ')';
+    private const char BracketOpen = '(';
+    private const char BracketClose = ')';
     private const int Eof = -1;
     
     /**
@@ -29,7 +30,11 @@ public class XprTokenizer
     private readonly StringBuilder _sb = new();
     
     public bool IsEof => Cur == Len;
-    
+
+    /**
+     * bracket counter, increment on open, decrement on close
+     */
+    private int _bracketStack = 0;
 
     public XprTokenizer(string src)
     {
@@ -55,12 +60,6 @@ public class XprTokenizer
     private int Peek()
     {
         return IsEof ? Eof : Src[Cur];
-    }
-    
-    private int PeekSkipWhitespaces()
-    {
-        SkipWhitespaces();
-        return Peek();
     }
     
     public XprToken? nextToken()
@@ -91,16 +90,21 @@ public class XprTokenizer
             tokenValue = ReadVariable();
         } else switch (c)
         {
-            case BRACKET_OPEN:
-                tokenType = BracketOpen;
+            case BracketOpen:
+                tokenType = XprTokenType.BracketOpen;
                 Cur++;
+                _bracketStack++;
                 break;
-            case BRACKET_CLOSE:
-                tokenType = BracketClose;
+            case BracketClose:
+                tokenType = XprTokenType.BracketClose;
                 Cur++;
+                if (--_bracketStack < 0)
+                {
+                    throw new XprParseException($"Unexpected '{BracketClose}' at {Cur - 1}");
+                };
                 break;
-            case ARG_SEPARATOR:
-                tokenType = ArgSeparator;
+            case ArgSeparator:
+                tokenType = XprTokenType.ArgSeparator;
                 Cur++;
                 break;
             default:

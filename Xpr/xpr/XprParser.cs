@@ -1,5 +1,6 @@
-using System.Runtime.InteropServices;
-using NUnit.Framework;
+using Xpr.xpr.Token;
+using Xpr.xpr.Util;
+using Xpr.xpr.Val;
 
 namespace Xpr.xpr;
 
@@ -16,10 +17,6 @@ public class XprParser : GenericEntity
     {
         return instance.parseVal(src);
     }
-    
-    //private readonly Stack<XprVal> vals = new();
-    
-    //private readonly Stack<XprToken?> tokens = new();
 
     private Xpr parse(string source)
     {
@@ -56,9 +53,6 @@ public class XprParser : GenericEntity
             return null;
         }
 
-        //vals.TryPeek(out var prevVal);
-        var prevValConsumed = false;
-        var prevType = prevVal?.GetValType();
         XprVal? val = null;
         switch (token.Type)
         {
@@ -75,7 +69,6 @@ public class XprParser : GenericEntity
                     nameVal = prevVal?.Cast<XprValVariable>()
                 };
                 val = func;
-                prevValConsumed = func.IsNamed;
                 XprVal? arg = null;
                 while (!func.IsClosed && !xt.IsEof)
                 {
@@ -96,7 +89,7 @@ public class XprParser : GenericEntity
                                 arg = null;
                                 break;
                             default:
-                                throw new ArgumentOutOfRangeException();
+                                throw new XprParseException($"Unexpected child token {token} for {func}");
                         }
                     }
                     else
@@ -104,6 +97,11 @@ public class XprParser : GenericEntity
                         Assert(next != null);
                         arg = next;
                     }
+                }
+
+                if (!func.IsClosed)
+                {
+                    throw new XprParseException($"Unbalanced open bracket for {func} at {func.bracketOpen.Range.From}");
                 }
                 break;
             case XprTokenType.Operator:
@@ -126,47 +124,6 @@ public class XprParser : GenericEntity
             unconsumedToken = token;
         }
         return val;
-        /*
-        //
-        // push unconsumed token or created val
-        if (val == null)
-        {
-            log("No value created for token: {0}", token);
-            //tokens.Push(token);
-        }
-        else
-        {
-            log("created value {0} for token {1}", val, token);
-            if (prevVal != null)
-            {
-                var consumed = prevVal.consumeRight(val);
-                log("{0}.consumeRight({1}) = {2}", prevVal, val, consumed);
-                if (!consumed)
-                {
-                    consumed = val.consumeLeft(prevVal);
-                    log("{0}.consumeLeft({1}) = {2}", val, prevVal, consumed);
-                    if (consumed)
-                    {
-                        vals.Pop();
-                    }
-                }
-                else
-                {
-                    val = null;
-                }
-            }
-
-            if (val != null)
-            {
-                vals.Push(val);
-            }
-        }
-
-        if (!xt.IsEof)
-        {
-            ParseNext(xt);
-        }
-        */
     }
     
     private static void BadInput(XprToken token, XprVal prevVal)

@@ -1,13 +1,17 @@
 using Newtonsoft.Json;
 using Xpr.xpr.Token;
+using Xpr.xpr.Util;
 using JsonConverter = Newtonsoft.Json.JsonConverter;
 
-namespace Xpr.xpr;
+namespace Xpr.xpr.Val;
 
+/**
+ * base class for Xpr value provider
+ */
 public abstract class XprVal : GenericEntity
 {
     public static readonly JsonSerializerSettings JsonSettings = new() {
-        Converters = new List<JsonConverter>()
+        Converters = new List<JsonConverter>
         {
             new Newtonsoft.Json.Converters.StringEnumConverter(),
             new JsonSrcRangeConverter()
@@ -55,10 +59,6 @@ public abstract class XprVal : GenericEntity
         return val;
     }
     
-    public abstract bool consumeLeft(XprVal val);
-
-    public abstract bool consumeRight(XprVal? val);
-
     public string ToStringDeep()
     {
         return ToJson(this);

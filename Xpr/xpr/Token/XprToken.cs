@@ -1,6 +1,8 @@
 using Newtonsoft.Json;
+using Xpr.xpr.Math;
+using Xpr.xpr.Util;
 
-namespace Xpr.xpr;
+namespace Xpr.xpr.Token;
 
 /**
  * represents token parsed from character stream

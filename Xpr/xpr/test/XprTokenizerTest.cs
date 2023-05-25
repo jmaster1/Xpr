@@ -1,4 +1,6 @@
 using NUnit.Framework;
+using Xpr.xpr.Math;
+using Xpr.xpr.Token;
 
 namespace Xpr.xpr.test;
 

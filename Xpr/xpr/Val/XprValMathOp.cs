@@ -1,4 +1,7 @@
-namespace Xpr.xpr;
+using Xpr.xpr.Math;
+using Xpr.xpr.Token;
+
+namespace Xpr.xpr.Val;
 
 internal class XprValMathOp : XprVal
 {
@@ -23,31 +26,6 @@ internal class XprValMathOp : XprVal
         var l = _left.Eval(ctx);
         var r = _right.Eval(ctx);
         return _token.MathOperator.Apply(l, r);
-    }
-
-    public override bool consumeLeft(XprVal val)
-    {
-        //
-        // check if left is lower priority math op
-        if (val.Is(XprValType.MathOp))
-        {
-            var mathOp = (XprValMathOp)val;
-            if (mathOp.MathOperator.GetPriority() < MathOperator.GetPriority())
-            {
-                val = mathOp._right;
-                mathOp._right = this;
-            }
-        }
-        Assert(_left == null);
-        _left = val;
-        return true;
-    }
-    
-    public override bool consumeRight(XprVal? val)
-    {
-        if (_right != null) return false;
-        _right = val;
-        return true;
     }
     
     public override string ToString()

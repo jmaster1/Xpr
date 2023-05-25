@@ -1,4 +1,6 @@
-namespace Xpr.xpr;
+using Xpr.xpr.Token;
+
+namespace Xpr.xpr.Val;
 
 internal class XprValNumber : XprVal
 {
@@ -20,16 +22,6 @@ internal class XprValNumber : XprVal
     public override float Eval(XprContext ctx)
     {
         return Value;
-    }
-
-    public override bool consumeLeft(XprVal val)
-    {
-        return false;
-    }
-    
-    public override bool consumeRight(XprVal? val)
-    {
-        return false;
     }
 
     public override string ToString()
