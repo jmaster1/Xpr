@@ -27,7 +27,7 @@ internal class XprValNumber : XprVal
         return false;
     }
     
-    public override bool consumeRight(XprVal val)
+    public override bool consumeRight(XprVal? val)
     {
         return false;
     }

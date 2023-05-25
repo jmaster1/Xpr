@@ -57,7 +57,7 @@ public abstract class XprVal : GenericEntity
     
     public abstract bool consumeLeft(XprVal val);
 
-    public abstract bool consumeRight(XprVal val);
+    public abstract bool consumeRight(XprVal? val);
 
     public string ToStringDeep()
     {

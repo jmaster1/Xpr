@@ -50,6 +50,7 @@ public class XprParser : GenericEntity
     {
         unconsumedToken = null;
         var token = xt.nextToken();
+        Log($"nextToken={token}");
         if (token == null)
         {
             return null;
@@ -75,28 +76,33 @@ public class XprParser : GenericEntity
                 };
                 val = func;
                 prevValConsumed = func.IsNamed;
-                for (var next = ParseNext(xt, func, out token);; next = ParseNext(xt, func, out token))
+                XprVal? arg = null;
+                while (!func.IsClosed && !xt.IsEof)
                 {
+                    var next = ParseNext(xt, arg, out token);
                     if (token != null)
                     {
                         switch (token.Type)
                         {
                             case XprTokenType.BracketClose:
+                                if (arg != null)
+                                {
+                                    func.AddArg(arg);
+                                }
                                 func.Close(token);
                                 break;
                             case XprTokenType.ArgSeparator:
-                                continue;
+                                func.AddArg(arg);
+                                arg = null;
+                                break;
                             default:
                                 throw new ArgumentOutOfRangeException();
                         }
                     }
-                    else if(next != null)
-                    {
-                        func.AddArg(next);
-                    }
                     else
                     {
-                        break;
+                        Assert(next != null);
+                        arg = next;
                     }
                 }
                 break;
@@ -114,7 +120,7 @@ public class XprParser : GenericEntity
             default:
                 throw new ArgumentOutOfRangeException();
         }
-
+        Log($"created val={val}");
         if (val == null)
         {
             unconsumedToken = token;

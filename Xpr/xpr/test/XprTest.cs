@@ -14,7 +14,7 @@ public class XprTest
     public void TestParse()
     {
 
-        var xpr = new Xpr("sin(0)").Parse();
+        var xpr = new Xpr("sin(0+1)").Parse();
         Console.Out.WriteLine(xpr.ToStringDeep());
     }
 

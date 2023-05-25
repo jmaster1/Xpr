@@ -43,7 +43,7 @@ internal class XprValMathOp : XprVal
         return true;
     }
     
-    public override bool consumeRight(XprVal val)
+    public override bool consumeRight(XprVal? val)
     {
         if (_right != null) return false;
         _right = val;

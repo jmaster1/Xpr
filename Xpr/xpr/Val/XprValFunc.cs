@@ -2,7 +2,7 @@ namespace Xpr.xpr;
 
 internal class XprValFunc : XprVal
 {
-    public readonly LinkedList<XprVal> _args = new();
+    public readonly LinkedList<XprVal?> _args = new();
     
     private readonly LinkedList<float> _vals = new();
 
@@ -14,7 +14,7 @@ internal class XprValFunc : XprVal
     /**
      * bracket tokens
      */
-    public XprToken bracketClose, bracketOpen;
+    public XprToken? bracketClose, bracketOpen;
     
     /**
      * function name variable, null for anonymous function (brackets)
@@ -27,6 +27,8 @@ internal class XprValFunc : XprVal
     public string? Name => nameVal?.Token?.StringValue;
 
     public bool IsNamed => Name != null;
+    
+    public bool IsClosed => bracketClose != null;
 
     public override XprValType GetValType()
     {
@@ -53,7 +55,7 @@ internal class XprValFunc : XprVal
         return true;
     }
 
-    public override bool consumeRight(XprVal val)
+    public override bool consumeRight(XprVal? val)
     {
         _args.AddLast(val);
         return true;
@@ -69,8 +71,9 @@ internal class XprValFunc : XprVal
         return GetValType() + "=" + Name;
     }
 
-    public void AddArg(XprVal next)
+    public void AddArg(XprVal? arg)
     {
-        _args.AddLast(next);
+        Assert(arg != null);
+        _args.AddLast(arg);
     }
 }
