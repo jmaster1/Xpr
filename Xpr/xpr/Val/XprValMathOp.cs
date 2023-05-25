@@ -10,7 +10,7 @@ internal class XprValMathOp : XprVal
 
     public XprValMathOp(XprToken operatorToken)
     {
-        _token = Require(operatorToken, XprTokenType.Operator);
+        _token = RequireToken(operatorToken, XprTokenType.Operator);
     }
 
     public override XprValType GetValType()

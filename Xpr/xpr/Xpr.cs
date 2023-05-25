@@ -20,9 +20,10 @@ public class Xpr
         }
     }
 
-    private void Parse()
+    public Xpr Parse()
     {
         Val = XprParser.createVal(Src);
+        return this;
     }
 
     public float Eval(XprContext ctx)
@@ -37,6 +38,11 @@ public class Xpr
     public float Eval()
     {
         return Eval(XprContext.DefaultContext);
+    }
+
+    public string ToStringDeep()
+    {
+        return XprVal.ToJson(this);
     }
 }
     

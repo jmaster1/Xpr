@@ -17,7 +17,7 @@ public class XprParser : GenericEntity
         return instance.parseVal(src);
     }
     
-    private readonly Stack<XprVal> vals = new();
+    //private readonly Stack<XprVal> vals = new();
     
     //private readonly Stack<XprToken?> tokens = new();
 
@@ -34,22 +34,29 @@ public class XprParser : GenericEntity
     private XprVal? parseVal(string source)
     {
         var xt = new XprTokenizer(source);
-        ParseNext(xt);
-        Assert(vals.Count == 1);
-        //Assert(tokens.Count == 0);
-        var val = vals.Pop();
+        XprVal? val = null;
+        while (!xt.IsEof)
+        {
+            var next = ParseNext(xt, val, out _);
+            if (next != null)
+            {
+                val = next;
+            }
+        }
         return val;
     }
 
-    XprVal? ParseNext(XprTokenizer xt)
+    XprVal? ParseNext(XprTokenizer xt, XprVal? prevVal, out XprToken? unconsumedToken)
     {
+        unconsumedToken = null;
         var token = xt.nextToken();
         if (token == null)
         {
             return null;
         }
 
-        vals.TryPeek(out var prevVal);
+        //vals.TryPeek(out var prevVal);
+        var prevValConsumed = false;
         var prevType = prevVal?.GetValType();
         XprVal? val = null;
         switch (token.Type)
@@ -67,14 +74,40 @@ public class XprParser : GenericEntity
                     nameVal = prevVal?.Cast<XprValVariable>()
                 };
                 val = func;
-                break;
-            case XprTokenType.BracketClose:
-                func = (XprValFunc)prevVal!;
-                func.Close(token);
+                prevValConsumed = func.IsNamed;
+                for (var next = ParseNext(xt, func, out token);; next = ParseNext(xt, func, out token))
+                {
+                    if (token != null)
+                    {
+                        switch (token.Type)
+                        {
+                            case XprTokenType.BracketClose:
+                                func.Close(token);
+                                break;
+                            case XprTokenType.ArgSeparator:
+                                continue;
+                            default:
+                                throw new ArgumentOutOfRangeException();
+                        }
+                    }
+                    else if(next != null)
+                    {
+                        func.AddArg(next);
+                    }
+                    else
+                    {
+                        break;
+                    }
+                }
                 break;
             case XprTokenType.Operator:
-                val = new XprValMathOp(token);
+                var mathOp = new XprValMathOp(token);
+                mathOp._left = mathOp.RequireVal(prevVal);
+                mathOp._right = ParseNext(xt, mathOp, out token);
+                Assert(token == null);
+                val = mathOp;
                 break;
+            case XprTokenType.BracketClose:
             case XprTokenType.ArgSeparator:
                 break;
             case XprTokenType.Invalid:
@@ -82,10 +115,9 @@ public class XprParser : GenericEntity
                 throw new ArgumentOutOfRangeException();
         }
 
-        if (prevVal != null)
+        if (val == null)
         {
-            
-            
+            unconsumedToken = token;
         }
         return val;
         /*

@@ -1,3 +1,5 @@
+using Newtonsoft.Json;
+
 namespace Xpr.xpr;
 
 /**
@@ -18,10 +20,13 @@ public class XprToken : GenericEntity
         Range = range;
     }
 
+    [JsonIgnore]
     public float NumberValue => (float)(Value ?? float.NaN);
     
+    [JsonIgnore]
     public string? StringValue => (string)(Value ?? null)!;
     
+    [JsonIgnore]
     public MathOperator MathOperator => (MathOperator)(Value ?? MathOperator.Undefined);
 
     public bool Is(XprTokenType type)

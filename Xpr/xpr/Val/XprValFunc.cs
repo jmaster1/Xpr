@@ -2,7 +2,7 @@ namespace Xpr.xpr;
 
 internal class XprValFunc : XprVal
 {
-    private readonly LinkedList<XprVal> _args = new();
+    public readonly LinkedList<XprVal> _args = new();
     
     private readonly LinkedList<float> _vals = new();
 
@@ -24,8 +24,10 @@ internal class XprValFunc : XprVal
     /**
      * function name retrieval
      */
-    public string? Name => nameVal?.Token?.StringValue; 
-    
+    public string? Name => nameVal?.Token?.StringValue;
+
+    public bool IsNamed => Name != null;
+
     public override XprValType GetValType()
     {
         return XprValType.Func;
@@ -65,5 +67,10 @@ internal class XprValFunc : XprVal
     public override string ToString()
     {
         return GetValType() + "=" + Name;
+    }
+
+    public void AddArg(XprVal next)
+    {
+        _args.AddLast(next);
     }
 }

@@ -8,7 +8,7 @@ internal class XprValNumber : XprVal
     
     public XprValNumber(XprToken token)
     {
-        Token = Require(token, XprTokenType.Number);
+        Token = RequireToken(token, XprTokenType.Number);
         Value = token.NumberValue;
     }
 
