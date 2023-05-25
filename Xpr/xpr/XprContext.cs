@@ -18,4 +18,9 @@ public class XprContext
     {
         return -1;
     }
+
+    public Func<float, float> ResolveFunc1(string? name)
+    {
+        throw new NotImplementedException();
+    }
 }

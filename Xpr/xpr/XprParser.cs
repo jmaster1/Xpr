@@ -1,3 +1,4 @@
+using Xpr.xpr.Math;
 using Xpr.xpr.Token;
 using Xpr.xpr.Util;
 using Xpr.xpr.Val;
@@ -63,11 +64,8 @@ public class XprParser : GenericEntity
                 val = new XprValVariable(token);
                 break;
             case XprTokenType.BracketOpen:
-                var func = new XprValFunc()
-                {
-                    bracketOpen =  token,
-                    nameVal = prevVal?.Cast<XprValVariable>()
-                };
+                var name = prevVal?.Cast<XprValVariable>()?.Name;
+                var func = new XprValFuncN(name);
                 val = func;
                 XprVal? arg = null;
                 while (!func.IsClosed && !xt.IsEof)
@@ -101,15 +99,27 @@ public class XprParser : GenericEntity
 
                 if (!func.IsClosed)
                 {
-                    throw new XprParseException($"Unbalanced open bracket for {func} at {func.bracketOpen.Range.From}");
+                    throw new XprParseException($"Function {func} left unclosed");
                 }
                 break;
             case XprTokenType.Operator:
-                var mathOp = new XprValMathOp(token);
-                mathOp._left = mathOp.RequireVal(prevVal);
-                mathOp._right = ParseNext(xt, mathOp, out token);
-                Assert(token == null);
-                val = mathOp;
+                //
+                // this might be unary minus if no prevVal
+                var op = token.MathOperator;
+                if (op == MathOperator.Minus && prevVal == null)
+                {
+                    var negate = new XprValFunc1(MathFunc1.Negate);
+                    arg = ParseNext(xt, null, out token);
+                    negate.arg = RequireVal(arg);
+                    val = negate;
+                }
+                else
+                {
+                    var mathOp = new XprValMathOp(token, prevVal);
+                    mathOp._right = ParseNext(xt, mathOp, out token);
+                    Assert(token == null);
+                    val = mathOp;
+                }
                 break;
             case XprTokenType.BracketClose:
             case XprTokenType.ArgSeparator:
@@ -129,5 +139,15 @@ public class XprParser : GenericEntity
     private static void BadInput(XprToken token, XprVal prevVal)
     {
         throw new ArgumentException(string.Format("Bad input, token={}, prevVal={}", token, prevVal));
+    }
+    
+    public XprVal? RequireVal(XprVal? val)
+    {
+        if (val == null)
+        {
+            throw new XprParseException($"Unexpected end of stream");
+        }
+
+        return val;
     }
 }

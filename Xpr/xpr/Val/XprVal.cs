@@ -38,27 +38,7 @@ public abstract class XprVal : GenericEntity
 
         return token;
     }
-    
-    public XprVal? RequireVal(XprVal? val, XprValType type)
-    {
-        if (val == null || val.GetValType() != type)
-        {
-            throw new ArgumentException($"{this} requires val of type {type}, got: {val}");
-        }
 
-        return val;
-    }
-    
-    public XprVal? RequireVal(XprVal? val)
-    {
-        if (val == null)
-        {
-            throw new ArgumentException($"{this} requires val, got: {val}");
-        }
-
-        return val;
-    }
-    
     public string ToStringDeep()
     {
         return ToJson(this);

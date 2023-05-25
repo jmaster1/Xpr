@@ -13,14 +13,14 @@ public class XprTest
     [Test]
     public void TestParse()
     {
-
-        var xpr = new Xpr("sin(0+1)").Parse();
+        var xpr = new Xpr("-1").Parse();
         Console.Out.WriteLine(xpr.ToStringDeep());
     }
     
     [Test]
     public void TestParseError()
     {
+        CheckParseError("-");
         CheckParseError(")");
         CheckParseError("sin(");
     }
