@@ -20,6 +20,8 @@
   &lt;TestAncestor&gt;&#xD;
     &lt;TestId&gt;NUnit3x::216A65D4-932B-478F-BB1E-C24DE394B524::net7.0::Xpr.xpr.test.XprTest&lt;/TestId&gt;&#xD;
     &lt;TestId&gt;NUnit3x::216A65D4-932B-478F-BB1E-C24DE394B524::net7.0::Xpr.xpr.test.XprContextTest.TestFunc0&lt;/TestId&gt;&#xD;
+    &lt;TestId&gt;NUnit3x::216A65D4-932B-478F-BB1E-C24DE394B524::net7.0::Xpr.xpr.test.XprContextTest.TestFunc2&lt;/TestId&gt;&#xD;
+    &lt;TestId&gt;NUnit3x::216A65D4-932B-478F-BB1E-C24DE394B524::net7.0::Xpr.xpr.test.XprContextTest.TestFuncN&lt;/TestId&gt;&#xD;
   &lt;/TestAncestor&gt;&#xD;
 &lt;/SessionState&gt;</s:String>
 	</wpf:ResourceDictionary>

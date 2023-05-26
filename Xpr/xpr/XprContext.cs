@@ -64,8 +64,6 @@ public class XprContext : GenericEntity
     
     public static XprContext CreateDefault()
     {
-        var ctx = new XprContext();
-        ctx.ApplyMath();
-        return ctx;
+        return new XprContext().ApplyMath();
     }
 }
