@@ -102,9 +102,21 @@ public class XprParser : GenericEntity
                 else
                 {
                     var mathOp = new XprValMathOp(token.MathOperator, prevVal);
+                    //
+                    // check if prev is math op with lower priority
+                    var prevMathOp = prevVal.Is(XprValType.MathOp) ? (XprValMathOp)prevVal : null;
+                    if (prevMathOp != null && prevMathOp.MathOperator.GetPriority() < token.MathOperator.GetPriority())
+                    {
+                        mathOp._left = prevMathOp._right;
+                        prevMathOp._right = mathOp;
+                    }
+                    else
+                    {
+                        prevMathOp = null;
+                    }
                     mathOp._right = ParseNext(xt, mathOp, out token);
                     Assert(token == null);
-                    val = mathOp;
+                    val = prevMathOp ?? mathOp;
                 }
                 break;
             case XprTokenType.BracketClose:

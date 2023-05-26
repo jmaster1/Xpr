@@ -9,13 +9,6 @@ public class XprTest
     public void Setup()
     {
     }
-
-    [Test]
-    public void TestParse()
-    {
-        var xpr = new Xpr("-1").Parse();
-        Console.Out.WriteLine(xpr.ToStringDeep());
-    }
     
     [Test]
     public void TestParseError()
@@ -42,10 +35,13 @@ public class XprTest
     [Test]
     public void TestSimple()
     {
+        CheckEval("1+2*3", 7);
         CheckEval("1", 1);
+        CheckEval("-1", -1);
         CheckEval("1+2", 3);
         CheckEval("1 + 2", 3);
         CheckEval("1+2+3", 6);
+        
     }
     
     [Test]
