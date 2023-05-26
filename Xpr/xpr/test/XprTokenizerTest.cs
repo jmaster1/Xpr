@@ -7,11 +7,6 @@ namespace Xpr.xpr.test;
 public class XprTokenizerTest
 {
 
-    [SetUp]
-    public void Setup()
-    {
-    }
-
     [Test]
     public void Test()
     {
@@ -26,7 +21,7 @@ public class XprTokenizerTest
         AssertToken(tokens[2], XprTokenType.Number, 4);
     }
 
-    private void AssertToken(XprToken token, XprTokenType type, object value)
+    private static void AssertToken(XprToken token, XprTokenType type, object value)
     {
         Assert.AreEqual(type, token.Type);
         Assert.AreEqual(value, token.Value);

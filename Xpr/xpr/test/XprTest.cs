@@ -4,12 +4,6 @@ namespace Xpr.xpr.test;
 
 public class XprTest
 {
-
-    [SetUp]
-    public void Setup()
-    {
-    }
-    
     [Test]
     public void TestParseError()
     {
@@ -18,7 +12,7 @@ public class XprTest
         CheckParseError("sin(");
     }
 
-    private void CheckParseError(string src)
+    private static void CheckParseError(string src)
     {
         try
         {
@@ -50,10 +44,16 @@ public class XprTest
         CheckEval("cos(0)", 1);
         CheckEval("1 + sin(0)", 1);
         CheckEval("sin(0)", 0);
-        
+    }
+    
+    [Test]
+    public void TestMathN()
+    {
+        CheckEval("sum(1, 2, 3)", 6);
+        CheckEval("avg(1, 2, 3)", 2);
     }
 
-    private void CheckEval(string src, float expectedResult)
+    private static void CheckEval(string src, float expectedResult)
     {
         var xpr = new Xpr(src);
         xpr.Parse();

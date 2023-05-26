@@ -4,12 +4,12 @@ internal class XprValFuncN : XprValFunc
 {
     private readonly List<XprVal?> _args = new();
     
-    private readonly List<float> _vals = new();
+    private float[]? _values;
 
     /**
      * evaluator (retrieved from context)
      */
-    private Func<ICollection<float>, float>? _func;
+    private Func<float[], float>? _func;
 
     public XprValFuncN(string name) : base(name)
     {
@@ -17,15 +17,14 @@ internal class XprValFuncN : XprValFunc
 
     public override float Eval(XprContext ctx)
     {
-        _vals.Clear();
-        foreach (var arg in _args)
+        var n = _args.Count;
+        _values ??= new float[n];
+        for (var i = 0; i < n; i++)
         {
-            var val = arg.Eval(ctx);
-            _vals.Add(val);
+            _values[i] = _args[i]!.Eval(ctx);
         }
-
-        _func ??= ctx.ResolveFunc(Name);
-        var result = _func.Invoke(_vals);
+        _func ??= ctx.ResolveFuncN(Name);
+        var result = _func.Invoke(_values);
         return result;
     }
 
