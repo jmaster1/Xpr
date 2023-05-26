@@ -4,6 +4,5 @@ public enum XprValType
 {
     Number,
     Func,
-    MathOp,
-    Variable
+    MathOp
 }

@@ -4,11 +4,11 @@ namespace Xpr.xpr.Val;
 
 internal class XprValFunc2 : XprValFunc
 {
-    public XprVal? arg1;
+    public XprVal? Arg1;
     
-    public XprVal? arg2;
+    public XprVal? Arg2;
     
-    Func<float, float, float>? func;
+    public Func<float, float, float>? Func;
 
     public XprValFunc2(string name) : base(name)
     {
@@ -16,20 +16,20 @@ internal class XprValFunc2 : XprValFunc
 
     public XprValFunc2(MathFunc2 mf2) : base(mf2.ToString())
     {
-        func = mf2.GetFunc();
+        Func = mf2.GetFunc();
     }
 
     public override float Eval(XprContext ctx)
     {
-        var arg1Val = arg1.Eval(ctx);
-        var arg2Val = arg2.Eval(ctx);
-        func ??= ctx.ResolveFunc2(Name);
-        var result = func.Invoke(arg1Val, arg2Val);
+        var arg1Val = Arg1.Eval(ctx);
+        var arg2Val = Arg2.Eval(ctx);
+        Func ??= ctx.ResolveFunc2(Name);
+        var result = Func.Invoke(arg1Val, arg2Val);
         return result;
     }
     
     public override string ToString()
     {
-        return $"{Name}({arg1}, {arg2})";
+        return $"{Name}({Arg1}, {Arg2})";
     }
 }

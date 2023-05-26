@@ -9,24 +9,21 @@ public class XprContext : GenericEntity
 {
     public static readonly XprContext DefaultContext = new XprContext().ApplyMath();
 
-    public readonly Map<string, Func<float, float>> funcs1 = new();
+    private readonly Map<string, Func<float>> _funcs0 = new();
+
+    private readonly Map<string, Func<float, float>> _funcs1 = new();
+
+    private readonly Map<string, Func<float, float, float>> _funcs2 = new();
     
-    public readonly Map<string, Func<float, float, float>> funcs2 = new();
-
-    public float GetVariableValue(string? name)
-    {
-        throw new NotImplementedException();
-    }
-
     public XprContext ApplyMath()
     {
         foreach (var mf1 in LangHelper.EnumValues<MathFunc1>())
         {
-            funcs1[mf1.ToString().ToLower()] = mf1.GetFunc();
+            _funcs1[mf1.ToString().ToLower()] = mf1.GetFunc();
         }
         foreach (var mf2 in LangHelper.EnumValues<MathFunc2>())
         {
-            funcs2[mf2.ToString()] = mf2.GetFunc();
+            _funcs2[mf2.ToString()] = mf2.GetFunc();
         }
         return this;
     }
@@ -36,15 +33,23 @@ public class XprContext : GenericEntity
         throw new NotImplementedException();
     }
 
+    public Func<float> ResolveFunc0(string name)
+    {
+        Assert(name != null);
+        return _funcs0.Get(name.ToLower());
+    }
+    
     public Func<float, float> ResolveFunc1(string name)
     {
         Assert(name != null);
-        return funcs1.Get(name.ToLower());
+        return _funcs1.Get(name.ToLower());
     }
 
     public Func<float, float, float> ResolveFunc2(string name)
     {
         Assert(name != null);
-        return funcs2.Get(name.ToLower());
+        return _funcs2.Get(name.ToLower());
     }
+
+
 }

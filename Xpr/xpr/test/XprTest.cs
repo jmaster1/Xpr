@@ -51,9 +51,10 @@ public class XprTest
     [Test]
     public void TestMath1()
     {
+        CheckEval("cos(0)", 1);
         CheckEval("1 + sin(0)", 1);
         CheckEval("sin(0)", 0);
-        CheckEval("cos(0)", 1);
+        
     }
 
     private void CheckEval(string src, float expectedResult)

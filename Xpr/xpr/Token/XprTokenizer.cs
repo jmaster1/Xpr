@@ -1,5 +1,6 @@
 using System.Text;
 using Xpr.xpr.Math;
+using Xpr.xpr.Util;
 using static Xpr.xpr.Token.XprTokenType;
 
 namespace Xpr.xpr.Token;
@@ -7,7 +8,7 @@ namespace Xpr.xpr.Token;
 /**
  * converts character stream of expression into xpr tokens
  */
-public class XprTokenizer
+public class XprTokenizer : GenericEntity
 {
     private const char DecimalSeparator = '.';
     private const char ArgSeparator = ',';
@@ -19,28 +20,46 @@ public class XprTokenizer
     /**
      * source string
      */
-    public readonly string Src;
-    public readonly int Len;
+    private readonly string _src;
+
+    private readonly int _len;
     
     /**
      * cursor on the string
      */
-    public int Cur;
+    private int _cur;
     
     private readonly StringBuilder _sb = new();
     
-    public bool IsEof => Cur == Len;
+    private bool IsEof => _cur == _len;
+
+    public bool GetHasMoreTokens()
+    {
+        if (_peekedToken != null)
+        {
+            return true;
+        }
+
+        if (IsEof)
+        {
+            return false;
+        }
+
+        return PeekToken() != null;
+    }
 
     /**
      * bracket counter, increment on open, decrement on close
      */
-    private int _bracketStack = 0;
+    private int _bracketStack;
+
+    private XprToken? _peekedToken;
 
     public XprTokenizer(string src)
     {
-        Src = src;
-        Cur = 0;
-        Len = src.Length;
+        _src = src;
+        _cur = 0;
+        _len = src.Length;
     }
 
     /**
@@ -51,7 +70,7 @@ public class XprTokenizer
     {
         for (var c = Peek(); c != Eof && char.IsWhiteSpace((char)c); c = Peek())
         {
-            Cur++;
+            _cur++;
         }
 
         return IsEof;
@@ -59,63 +78,71 @@ public class XprTokenizer
 
     private int Peek()
     {
-        return IsEof ? Eof : Src[Cur];
+        return IsEof ? Eof : _src[_cur];
     }
     
-    public XprToken? nextToken()
+    private int Read()
     {
+        return IsEof ? Eof : _src[_cur++];
+    }
+    
+    public XprToken? NextToken()
+    {
+        if (_peekedToken != null)
+        {
+            var ret = _peekedToken;
+            _peekedToken = null;
+            return ret;
+        }
         if (SkipWhitespaces())
         {
             return null;
         }
         //
         // resolve token type from 1st char
-        var n = Peek();
+        var n = Read();
         var c = (char)n;
-        var tokenType = Invalid;
+        XprTokenType tokenType;
         object? tokenValue = null;
-        var range = new SrcRange(Src, Cur);
+        var range = new SrcRange(_src, _cur);
         if (IsNumeric(c))
         {
             tokenType = Number;
-            tokenValue = ReadNumber();
+            var str = Read(c, IsNumeric);
+            tokenValue = float.Parse(str);
         } else if (MathOperatorEx.resolve(c, out var op))
         {
             tokenType = Operator;
             tokenValue = op;
-            Cur++;
         } else if (IsVariable(c))
         {
             tokenType = Variable;
-            tokenValue = ReadVariable();
+            tokenValue = Read(c, IsVariableOrNumber);
         } else switch (c)
         {
             case BracketOpen:
                 tokenType = XprTokenType.BracketOpen;
-                Cur++;
                 _bracketStack++;
                 break;
             case BracketClose:
                 tokenType = XprTokenType.BracketClose;
-                Cur++;
                 if (--_bracketStack < 0)
                 {
-                    throw new XprParseException($"Unexpected '{BracketClose}' at {Cur - 1}");
-                };
+                    throw new XprParseException($"Unexpected '{BracketClose}' at {_cur - 1}");
+                }
                 break;
             case ArgSeparator:
                 tokenType = XprTokenType.ArgSeparator;
-                Cur++;
                 break;
             default:
                 throw new Exception("Unexpected char: " + c);
         }
-        return new XprToken(tokenType, tokenValue, range.SetTo(Cur));
+        return new XprToken(tokenType, tokenValue, range.SetTo(_cur));
     }
 
-    private string ReadVariable()
+    private static bool IsVariableOrNumber(char c)
     {
-        return Read(IsVariable);
+        return IsVariable(c) || char.IsDigit(c);
     }
 
     private static bool IsVariable(char c)
@@ -123,24 +150,19 @@ public class XprTokenizer
         return char.IsLetter(c) || c == Underscore;
     }
 
-    private float ReadNumber()
-    {
-        var str = Read(IsNumeric);
-        return float.Parse(str);
-    }
-
     private static bool IsNumeric(char c)
     {
         return char.IsDigit(c) || c == DecimalSeparator;
     }
 
-    private string Read(Func<char, bool> filter)
+    private string Read(char first, Func<char, bool> filter)
     {
         _sb.Clear();
+        _sb.Append(first);
         for (var c = Peek(); c != Eof && filter((char)c); c = Peek())
         {
             _sb.Append((char)c);
-            Cur++;
+            _cur++;
         }
 
         return _sb.ToString();
@@ -149,10 +171,22 @@ public class XprTokenizer
     public List<XprToken> Parse()
     {
         var list = new List<XprToken>();
-        for (var token = nextToken(); token != null; token = nextToken())
+        for (var token = NextToken(); token != null; token = NextToken())
         {
             list.Add(token);
         }
         return list;
+    }
+
+    public XprToken? PeekToken()
+    {
+        return _peekedToken ??= NextToken();
+    }
+
+    public void ConsumePeekToken(XprToken peekedToken)
+    {
+        Assert(_peekedToken != null);
+        Assert(peekedToken == _peekedToken);
+        _peekedToken = null;
     }
 }

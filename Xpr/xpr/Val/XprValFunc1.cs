@@ -2,11 +2,14 @@ using Xpr.xpr.Math;
 
 namespace Xpr.xpr.Val;
 
+/**
+ * function with 1 argument
+ */
 internal class XprValFunc1 : XprValFunc
 {
-    public XprVal? arg;
+    public XprVal? Arg;
     
-    Func<float, float>? func;
+    public Func<float, float>? Func;
 
     public XprValFunc1(string name) : base(name)
     {
@@ -14,19 +17,19 @@ internal class XprValFunc1 : XprValFunc
 
     public XprValFunc1(MathFunc1 mf1) : base(mf1.ToString())
     {
-        func = mf1.GetFunc();
+        Func = mf1.GetFunc();
     }
 
     public override float Eval(XprContext ctx)
     {
-        var argVal = arg.Eval(ctx);
-        func ??= ctx.ResolveFunc1(Name);
-        var result = func.Invoke(argVal);
+        var argVal = Arg.Eval(ctx);
+        Func ??= ctx.ResolveFunc1(Name);
+        var result = Func.Invoke(argVal);
         return result;
     }
     
     public override string ToString()
     {
-        return $"{Name}({arg})";
+        return $"{Name}({Arg})";
     }
 }

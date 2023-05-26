@@ -18,13 +18,9 @@ public class XprParser : GenericEntity
     {
         var xt = new XprTokenizer(source);
         XprVal? val = null;
-        while (!xt.IsEof)
+        while (xt.GetHasMoreTokens())
         {
-            var next = ParseNext(xt, val, out _);
-            if (next != null)
-            {
-                val = next;
-            }
+            val = ParseNext(xt, val, out _);
         }
         return val;
     }
@@ -32,13 +28,12 @@ public class XprParser : GenericEntity
     XprVal? ParseNext(XprTokenizer xt, XprVal? prevVal, out XprToken? unconsumedToken)
     {
         unconsumedToken = null;
-        var token = xt.nextToken();
+        var token = xt.NextToken();
         Log($"nextToken={token}");
         if (token == null)
         {
             return null;
         }
-
         XprVal? val = null;
         switch (token.Type)
         {
@@ -46,47 +41,52 @@ public class XprParser : GenericEntity
                 val = new XprValNumber(token.NumberValue);
                 break;
             case XprTokenType.Variable:
-                val = new XprValVariable(token.StringValue);
-                break;
-            case XprTokenType.BracketOpen:
-                var name = prevVal?.Cast<XprValVariable>()?.Name;
+                var name = token.StringValue;
                 var func = new XprValFuncN(name);
-                XprVal? arg = null;
-                while (!func.IsClosed && !xt.IsEof)
+                var nextToken = xt.PeekToken();
+                var opened = XprTokenType.BracketOpen.Is(nextToken);
+                if (opened)
                 {
-                    var next = ParseNext(xt, arg, out token);
-                    if (token != null)
+                    xt.ConsumePeekToken(nextToken);
+                    XprVal? arg = null;
+                    while (opened && xt.GetHasMoreTokens())
                     {
-                        switch (token.Type)
+                        var next = ParseNext(xt, arg, out token);
+                        if (token != null)
                         {
-                            case XprTokenType.BracketClose:
-                                if (arg != null)
-                                {
+                            switch (token.Type)
+                            {
+                                case XprTokenType.BracketClose:
+                                    if (arg != null)
+                                    {
+                                        func.AddArg(arg);
+                                    }
+                                    opened = false;
+                                    break;
+                                case XprTokenType.ArgSeparator:
                                     func.AddArg(arg);
-                                }
-                                func.Close(token);
-                                break;
-                            case XprTokenType.ArgSeparator:
-                                func.AddArg(arg);
-                                arg = null;
-                                break;
-                            default:
-                                throw new XprParseException($"Unexpected child token {token} for {func}");
+                                    arg = null;
+                                    break;
+                                default:
+                                    throw new XprParseException($"Unexpected child token {token} for {func}");
+                            }
+                        }
+                        else
+                        {
+                            Assert(next != null);
+                            arg = next;
                         }
                     }
-                    else
-                    {
-                        Assert(next != null);
-                        arg = next;
-                    }
                 }
-
-                if (!func.IsClosed)
+                if (opened)
                 {
                     throw new XprParseException($"Function {func} left unclosed");
                 }
 
                 val = func.Reduce();
+                break;
+            case XprTokenType.BracketOpen:
+                Assert(false);
                 break;
             case XprTokenType.Operator:
                 //
@@ -95,8 +95,8 @@ public class XprParser : GenericEntity
                 if (op == MathOperator.Minus && prevVal == null)
                 {
                     var negate = new XprValFunc1(MathFunc1.Negate);
-                    arg = ParseNext(xt, null, out token);
-                    negate.arg = RequireVal(arg);
+                    var arg = ParseNext(xt, null, out token);
+                    negate.Arg = RequireVal(arg);
                     val = negate;
                 }
                 else
@@ -110,7 +110,6 @@ public class XprParser : GenericEntity
             case XprTokenType.BracketClose:
             case XprTokenType.ArgSeparator:
                 break;
-            case XprTokenType.Invalid:
             default:
                 throw new ArgumentOutOfRangeException();
         }
@@ -122,12 +121,7 @@ public class XprParser : GenericEntity
         return val;
     }
     
-    private static void BadInput(XprToken token, XprVal prevVal)
-    {
-        throw new ArgumentException(string.Format("Bad input, token={}, prevVal={}", token, prevVal));
-    }
-    
-    public XprVal? RequireVal(XprVal? val)
+    public XprVal RequireVal(XprVal? val)
     {
         if (val == null)
         {

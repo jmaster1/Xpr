@@ -46,6 +46,6 @@ public abstract class XprVal : GenericEntity
     
     public static string ToJson(object src)
     {
-        return JsonConvert.SerializeObject(src, Formatting.Indented, JsonSettings);
+        return src.ToString();//JsonConvert.SerializeObject(src, Formatting.Indented, JsonSettings);
     }
 }
