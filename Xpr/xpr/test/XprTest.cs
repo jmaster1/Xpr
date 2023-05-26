@@ -53,12 +53,19 @@ public class XprTest
         CheckEval("avg(1, 2, 3)", 2);
     }
 
-    private static void CheckEval(string src, float expectedResult)
+    private void CheckEval(string src, float expected)
     {
+        EvalEq(expected, src, null);
+    }
+    
+    protected void EvalEq(float expected, string src, Action<XprContext>? ctxConsumer)
+    {
+        var ctx = XprContext.CreateDefault();
+        ctxConsumer?.Invoke(ctx);
         var xpr = new Xpr(src);
         xpr.Parse();
         Console.Out.WriteLine($"{src} > {xpr}");
-        var actual = xpr.Eval();
-        Assert.AreEqual(expectedResult, actual);
+        var actual = xpr.Eval(ctx);
+        Assert.AreEqual(expected, actual);
     }
 }

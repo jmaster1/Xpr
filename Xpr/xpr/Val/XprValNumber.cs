@@ -1,3 +1,5 @@
+using System.Globalization;
+
 namespace Xpr.xpr.Val;
 
 internal class XprValNumber : XprVal
@@ -21,6 +23,6 @@ internal class XprValNumber : XprVal
 
     public override string ToString()
     {
-        return _value.ToString();
+        return _value.ToString(CultureInfo.InvariantCulture);
     }
 }

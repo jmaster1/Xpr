@@ -4,7 +4,7 @@ using Xpr.xpr.Token;
 
 namespace Xpr.xpr.test;
 
-public class XprTokenizerTest
+public class XprTokenizerTest : XprTest
 {
 
     [Test]

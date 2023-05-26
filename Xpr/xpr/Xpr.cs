@@ -13,15 +13,6 @@ public class Xpr
         Src = src;
     }
     
-    public Xpr(string src, bool parse)
-    {
-        Src = src;
-        if(parse)
-        {
-            Parse();
-        }
-    }
-    
     public Xpr Parse()
     {
         Val = XprParser.createVal(Src);
@@ -40,11 +31,6 @@ public class Xpr
     public float Eval()
     {
         return Eval(XprContext.DefaultContext);
-    }
-
-    public string ToStringDeep()
-    {
-        return XprVal.ToJson(this);
     }
     
     public override string ToString()
