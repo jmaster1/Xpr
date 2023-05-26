@@ -1,4 +1,7 @@
-﻿using System.Text;
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
 
 namespace Xpr.xpr.Util
 {
@@ -371,11 +374,6 @@ namespace Xpr.xpr.Util
         public static void LongToDoubleInt(long a, out int i1, out int i2) {
             i1 = (int)(a & uint.MaxValue);
             i2 = (int)(a >> 32);
-        }
-
-        public static bool IsCompletedOk(this Task task)
-        {
-            return !task.IsCanceled && !task.IsFaulted && task.IsCompleted;
         }
 
         /// <summary>

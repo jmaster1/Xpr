@@ -1,4 +1,8 @@
-﻿namespace Xpr.xpr.Util
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+
+namespace Xpr.xpr.Util
 {
     /// <summary>
     /// Dictionary extension that is more convenient to use
