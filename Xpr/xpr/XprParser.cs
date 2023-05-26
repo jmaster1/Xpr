@@ -132,8 +132,8 @@ public class XprParser : GenericEntity
         }
         return val;
     }
-    
-    public XprVal RequireVal(XprVal? val)
+
+    private static XprVal RequireVal(XprVal? val)
     {
         if (val == null)
         {
