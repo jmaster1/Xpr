@@ -1,11 +1,9 @@
-﻿using Common.Util;
-
-namespace Common.Lang
+﻿namespace Xpr.xpr.Util
 {
     /// <summary>
     /// Dictionary extension that is more convenient to use
     /// </summary>
-    public class Map<TKey, TValue> : Dictionary<TKey, TValue>
+    public class Map<TKey, TValue> : Dictionary<TKey, TValue> where TKey : notnull
     {
         public Map()
         {

@@ -1,4 +1,4 @@
-﻿namespace Common.Lang
+﻿namespace Xpr.xpr.Util
 {
     /// <summary>
     /// generic interface with id support

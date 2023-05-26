@@ -1,7 +1,6 @@
 ﻿using System.Text;
-using Common.Lang;
 
-namespace Common.Util
+namespace Xpr.xpr.Util
 {
     /// <summary>
     /// language utility class
@@ -303,7 +302,7 @@ namespace Common.Util
 
         public static float Delta(this float f1, float f2)
         {
-            return Math.Max(f1, f2) - Math.Min(f1, f2);
+            return System.Math.Max(f1, f2) - System.Math.Min(f1, f2);
         }
 
         public static bool Equals<T>(T v0, T v1)

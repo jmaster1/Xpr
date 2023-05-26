@@ -1,12 +1,7 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Globalization;
-using System.IO;
-using System.Linq;
+﻿using System.Globalization;
 using System.Text;
-using Common.Lang;
 
-namespace Common.Util
+namespace Xpr.xpr.Util
 {
     /// <summary>
     /// string manipulation utility
